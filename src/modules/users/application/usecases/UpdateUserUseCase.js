@@ -11,6 +11,12 @@ class UpdateUserUseCase {
       e.status = 404;
       throw e;
     }
+
+    if (user.IsDeleted) {
+      const e = new Error('USER_ALREADY_DELETED');
+      e.status = 409;
+      throw e;
+    }
     
     if (patch.Username) {
       const exists = await this.userRepo.findByUsername(patch.Username);
@@ -29,14 +35,23 @@ class UpdateUserUseCase {
         throw e;
       }
     }
-
-    const ok = await this.userRepo.updatePartial(id, patch);
+    
+    const cleaned = {};
+    for (const [k, v] of Object.entries(patch || {})) {
+      if (v === undefined) continue;
+      if (k === 'Id' || k === 'IsDeleted') continue;
+      cleaned[k] = v;
+    }
+    
+    if (Object.keys(cleaned).length === 0) return user;
+    
+    const ok = await this.userRepo.updatePartial(id, cleaned);
     if (!ok) {
       const e = new Error('USER_UPDATE_FAILED');
       e.status = 500;
       throw e;
     }
-
+    
     return await this.userRepo.findById(id);
   }
 }

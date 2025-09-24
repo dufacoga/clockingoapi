@@ -10,7 +10,13 @@ class UpdateLocationUseCase {
       e.status = 404;
       throw e;
     }
-
+    
+    if (loc.IsDeleted) {
+      const e = new Error('LOCATION_ALREADY_DELETED');
+      e.status = 409;
+      throw e;
+    }
+    
     if (patch.Code) {
       const exists = await this.locationRepo.findByCode(patch.Code);
       if (exists && exists.Id !== id) {
@@ -19,14 +25,23 @@ class UpdateLocationUseCase {
         throw e;
       }
     }
+    
+    const cleaned = {};
+    for (const [k, v] of Object.entries(patch || {})) {
+      if (v === undefined) continue;
+      if (k === 'Id' || k === 'IsDeleted') continue;
+      cleaned[k] = v;
+    }
 
-    const ok = await this.locationRepo.updatePartial(id, patch);
+    if (Object.keys(cleaned).length === 0) return loc;
+    
+    const ok = await this.locationRepo.updatePartial(id, cleaned);
     if (!ok) {
       const e = new Error('LOCATION_UPDATE_FAILED');
       e.status = 500;
       throw e;
     }
-
+    
     return await this.locationRepo.findById(id);
   }
 }
