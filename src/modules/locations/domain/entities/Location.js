@@ -1,4 +1,4 @@
-const { BaseEntity } = require('./BaseEntity');
+const { BaseEntity } = require('../../../../shared/domain/BaseEntity');
 
 class Location extends BaseEntity {
   constructor({
