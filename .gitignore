@@ -1,1 +1,44 @@
-/.env
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Build
+dist/
+build/
+
+# Env / Config
+.env
+.env.local
+.env.*.local
+
+# SQLite databases (local files)
+#*.sqlite
+#*.sqlite3
+#*.db
+#*.db3
+
+# Logs
+logs/
+*.log
+
+# VSCode / IDE / OS
+.vscode/
+.idea/
+*.swp
+.DS_Store
+Thumbs.db
+
+# Swagger generated files (optional)
+swagger-output.json
+
+# Coverage & testing
+coverage/
+*.lcov
+
+# Local testing scripts
+test/
+tests/
+__tests__/
