@@ -1,7 +1,15 @@
 const { BaseEntity } = require('../../../../shared/domain/BaseEntity');
 
 class User extends BaseEntity {
-  constructor({ Id = null, Name, Phone = null, Username, AuthToken, RoleId }) {
+  constructor({
+    Id = null, 
+    Name, 
+    Phone = null, 
+    Username, 
+    AuthToken, 
+    RoleId, 
+    IsDeleted = false 
+  }) {
     super();
     this.Id = Id;
     this.Name = Name;
@@ -9,11 +17,12 @@ class User extends BaseEntity {
     this.Username = Username;
     this.AuthToken = AuthToken;
     this.RoleId = RoleId;
+    this.IsDeleted = !!IsDeleted;
   }
 
   static get tableName() { return 'Users'; }
   static get columns() {
-    return ['Id', 'Name', 'Phone', 'Username', 'AuthToken', 'RoleId'];
+    return ['Id', 'Name', 'Phone', 'Username', 'AuthToken', 'RoleId', 'IsDeleted'];
   }
 
   static fromRow(row = {}) {
@@ -24,6 +33,7 @@ class User extends BaseEntity {
       Username: row.Username ?? null,
       AuthToken: row.AuthToken ?? null,
       RoleId: row.RoleId ?? null,
+      IsDeleted: row.IsDeleted ?? false,
     });
   }
 
@@ -35,6 +45,7 @@ class User extends BaseEntity {
       Username: this.Username,
       AuthToken: this.AuthToken,
       RoleId: this.RoleId,
+      IsDeleted: this.IsDeleted ? 1 : 0,
     };
   }
 }

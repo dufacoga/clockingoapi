@@ -13,6 +13,7 @@ class Exit extends BaseEntity {
     UpdatedAt = null,
     IsSynced = false,
     DeviceId = null,
+    IsDeleted = false,
   }) {
     super();
     this.Id = Id;
@@ -26,13 +27,14 @@ class Exit extends BaseEntity {
     this.UpdatedAt = UpdatedAt ? BaseEntity._toDate(UpdatedAt) : null;
     this.IsSynced = !!IsSynced;
     this.DeviceId = DeviceId;
+    this.IsDeleted = !!IsDeleted;
   }
 
   static get tableName() { return 'Exits'; }
   static get columns() {
     return [
       'Id', 'UserId', 'LocationId', 'ExitTime', 'EntryId', 'Result',
-      'IrregularBehavior', 'ReviewedByAdmin', 'UpdatedAt', 'IsSynced', 'DeviceId'
+      'IrregularBehavior', 'ReviewedByAdmin', 'UpdatedAt', 'IsSynced', 'DeviceId', 'IsDeleted'
     ];
   }
 
@@ -44,11 +46,12 @@ class Exit extends BaseEntity {
       ExitTime: row.ExitTime ?? null,
       EntryId: row.EntryId ?? null,
       Result: row.Result ?? null,
-      IrregularBehavior: this._toBool(row.IrregularBehavior),
-      ReviewedByAdmin: this._toBool(row.ReviewedByAdmin),
+      IrregularBehavior: row.IrregularBehavior ?? false,
+      ReviewedByAdmin: row.ReviewedByAdmin ?? false,
       UpdatedAt: row.UpdatedAt ?? null,
-      IsSynced: this._toBool(row.IsSynced),
+      IsSynced: row.IsSynced ?? false,
       DeviceId: row.DeviceId ?? null,
+      IsDeleted: row.IsDeleted ?? false,
     });
   }
 
@@ -60,11 +63,12 @@ class Exit extends BaseEntity {
       ExitTime: this.constructor._toISO(this.ExitTime),
       EntryId: this.EntryId,
       Result: this.Result,
-      IrregularBehavior: this.constructor._fromBool(this.IrregularBehavior),
-      ReviewedByAdmin: this.constructor._fromBool(this.ReviewedByAdmin),
+      IrregularBehavior: this.IrregularBehavior ? 1 : 0,
+      ReviewedByAdmin: this.ReviewedByAdmin ? 1 : 0,
       UpdatedAt: this.constructor._toISO(this.UpdatedAt),
-      IsSynced: this.constructor._fromBool(this.IsSynced),
+      IsSynced: this.IsSynced ? 1 : 0,
       DeviceId: this.DeviceId,
+      IsDeleted: this.IsDeleted ? 1 : 0,
     };
   }
 }

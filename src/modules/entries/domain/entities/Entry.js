@@ -10,6 +10,7 @@ class Entry extends BaseEntity {
     UpdatedAt = null,
     IsSynced = false,
     DeviceId = null,
+    IsDeleted = false,
   }) {
     super();
     this.Id = Id;
@@ -20,13 +21,14 @@ class Entry extends BaseEntity {
     this.UpdatedAt = UpdatedAt ? BaseEntity._toDate(UpdatedAt) : null;
     this.IsSynced = !!IsSynced;
     this.DeviceId = DeviceId;
+    this.IsDeleted = !!IsDeleted;
   }
 
   static get tableName() { return 'Entries'; }
   static get columns() {
     return [
       'Id', 'UserId', 'LocationId', 'EntryTime', 'Selfie',
-      'UpdatedAt', 'IsSynced', 'DeviceId'
+      'UpdatedAt', 'IsSynced', 'DeviceId', 'IsDeleted'
     ];
   }
 
@@ -38,8 +40,9 @@ class Entry extends BaseEntity {
       EntryTime: row.EntryTime ?? null,
       Selfie: row.Selfie ?? null,
       UpdatedAt: row.UpdatedAt ?? null,
-      IsSynced: this._toBool(row.IsSynced),
+      IsSynced: row.IsSynced ?? false,
       DeviceId: row.DeviceId ?? null,
+      IsDeleted: row.IsDeleted ?? false,
     });
   }
 
@@ -51,8 +54,9 @@ class Entry extends BaseEntity {
       EntryTime: this.constructor._toISO(this.EntryTime),
       Selfie: this.Selfie,
       UpdatedAt: this.constructor._toISO(this.UpdatedAt),
-      IsSynced: this.constructor._fromBool(this.IsSynced),
+      IsSynced: this.IsSynced ? 1 : 0,
       DeviceId: this.DeviceId,
+      IsDeleted: this.IsDeleted ? 1 : 0,
     };
   }
 }
