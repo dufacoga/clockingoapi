@@ -1,6 +1,8 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 
+const apiKeyAuth = require('./shared/interfaces/rest/apiKeyAuth');
+
 const buildEntries = require('./modules/entries/interfaces/rest/build');
 const entriesRoutes = require('./modules/entries/interfaces/rest/routes');
 
@@ -23,6 +25,8 @@ const exitsUC = buildExits();
 entriesUC.setExitRepo(exitsUC.exitRepo);
 const locationsUC = buildLocations();
 const usersUC = buildUsers();
+
+app.use(apiKeyAuth);
 
 app.use('/entries', entriesRoutes(entriesUC));
 app.use('/exits', exitsRoutes(exitsUC));
