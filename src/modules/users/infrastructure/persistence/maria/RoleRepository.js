@@ -1,4 +1,4 @@
-const knex = require('../../../../../../shared/infrastructure/db/knex');
+const knex = require('../../../../../shared/infrastructure/db/knex');
 
 class RoleRepository {
   table() { return 'Roles'; }

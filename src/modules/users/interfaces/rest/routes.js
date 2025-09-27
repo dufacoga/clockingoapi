@@ -2,7 +2,7 @@ const { Router } = require('express');
 const asyncHandler = require('../../../../shared/interfaces/rest/asyncHandler');
 const validate = require('../../../../shared/interfaces/rest/validate');
 
-const { idParamSchema, usernameParamSchema } =
+const { idParamSchema, usernameParamSchema, paginationQuerySchema } =
   require('../../../../shared/interfaces/rest/schemas/CommonSchemas');
 const { createUserSchema, updateUserSchema } =
   require('./schemas/UserSchema');
@@ -10,6 +10,16 @@ const { createUserSchema, updateUserSchema } =
 module.exports = (uc) => {
   const r = Router();
   
+  r.get('/',
+    validate(paginationQuerySchema, 'query'),
+    asyncHandler(async (req, res) => {
+      const page = req.validated?.page ?? 1;
+      const pageSize = req.validated?.pageSize ?? 50;
+      const { items, total } = await uc.userRepo.listPage({ page, pageSize });
+      res.json({ items, page, pageSize, total });
+    })
+  );
+
   r.get('/:id',
     validate(idParamSchema, 'params'),
     asyncHandler(async (req, res) => {

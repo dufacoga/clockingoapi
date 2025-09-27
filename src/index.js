@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 const express = require('express');
 const bodyParser = require('body-parser');
 
@@ -17,6 +19,8 @@ const usersRoutes = require('./modules/users/interfaces/rest/routes');
 
 const errorHandler = require('./shared/interfaces/rest/errorHandler');
 
+const { swaggerUi, specs } = require("./shared/interfaces/swagger");
+
 const app = express();
 app.use(bodyParser.json());
 
@@ -25,6 +29,8 @@ const exitsUC = buildExits();
 entriesUC.setExitRepo(exitsUC.exitRepo);
 const locationsUC = buildLocations();
 const usersUC = buildUsers();
+
+app.use("/swagger", swaggerUi.serve, swaggerUi.setup(specs));
 
 app.use(apiKeyAuth);
 

@@ -1,4 +1,4 @@
-const knex = require('../../../../../../shared/infrastructure/db/knex');
+const knex = require('../../../../../shared/infrastructure/db/knex');
 
 class UserRepository {
   table() { return 'Users'; }
@@ -9,6 +9,17 @@ class UserRepository {
 
   async findByUsername(username) {
     return knex(this.table()).where({ Username: username, IsDeleted: 0 }).first();
+  }
+
+  async listPage({ page = 1, pageSize = 50 } = {}) {
+    const base = knex(this.table()).where({ IsDeleted: 0 });
+    const [{ count }] = await base.clone().count({ count: '*' });
+    const items = await base
+      .clone()
+      .orderBy('Id', 'desc')
+      .limit(pageSize)
+      .offset((page - 1) * pageSize);
+    return { items, total: Number(count) };
   }
 
   async create(data) {

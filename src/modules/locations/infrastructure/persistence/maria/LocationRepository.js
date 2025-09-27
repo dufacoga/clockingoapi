@@ -1,4 +1,4 @@
-const knex = require('../../../../../../shared/infrastructure/db/knex');
+const knex = require('../../../../../shared/infrastructure/db/knex');
 
 class LocationRepository {
   table() { return 'Locations'; }
@@ -9,6 +9,17 @@ class LocationRepository {
 
   async findByCode(code) {
     return knex(this.table()).where({ Code: code, IsDeleted: 0 }).first();
+  }
+  
+  async listPage({ page = 1, pageSize = 50 } = {}) {
+    const base = knex(this.table()).where({ IsDeleted: 0 });
+    const [{ count }] = await base.clone().count({ count: '*' });
+    const items = await base
+      .clone()
+      .orderBy('Id', 'desc')
+      .limit(pageSize)
+      .offset((page - 1) * pageSize);
+    return { items, total: Number(count) };
   }
 
   async create(data) {

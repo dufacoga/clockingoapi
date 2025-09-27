@@ -25,7 +25,7 @@ const usernameParamSchema = z.object({
 const paginationQuerySchema = z.object({
   page: z.preprocess(toInt, z.number().int().min(1)).optional(),
   pageSize: z.preprocess(toInt, z.number().int().min(1).max(200)).optional()
-}).optional();
+});
 
 module.exports = {
   idParamSchema,

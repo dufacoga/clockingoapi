@@ -15,6 +15,7 @@ module.exports = function build() {
     getUserByUsername: new GetUserByUsernameUseCase({ userRepo }),
     createUser: new CreateUserUseCase({ userRepo, roleRepo }),
     updateUser: new UpdateUserUseCase({ userRepo }),
-    userRepo, roleRepo
+    userRepo,
+    roleRepo
   };
 };

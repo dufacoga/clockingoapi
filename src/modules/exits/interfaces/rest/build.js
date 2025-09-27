@@ -8,9 +8,9 @@ module.exports = function build() {
   const exitRepo = new ExitRepository();
 
   return {
-    exitRepo,
     getExitById: new GetExitByIdUseCase({ exitRepo }),
     registerExit: new RegisterExitUseCase({ exitRepo }),
     updateExit: new UpdateExitUseCase({ exitRepo }),
+    exitRepo
   };
 };

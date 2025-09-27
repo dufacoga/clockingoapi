@@ -13,6 +13,7 @@ module.exports = function build() {
     getLastEntryByUser: new GetLastEntryByUserUseCase({ entryRepo, exitRepo: null }),
     registerEntry: new RegisterEntryUseCase({ entryRepo }),
     updateEntry: new UpdateEntryUseCase({ entryRepo }),
+    entryRepo,
     setExitRepo(exitRepo) {
       this.getLastEntryByUser = new GetLastEntryByUserUseCase({ entryRepo, exitRepo });
     }
