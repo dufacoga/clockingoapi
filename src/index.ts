@@ -16,6 +16,9 @@ import exitsRoutes from './modules/exits/interfaces/rest/ExitRoutes';
 import buildLocations from './modules/locations/interfaces/rest/LocationBuild';
 import locationsRoutes from './modules/locations/interfaces/rest/LocationRoutes';
 
+import buildRole from './modules/users/interfaces/rest/RoleBuild';
+import roleRoutes from './modules/users/interfaces/rest/RoleRoutes';
+
 import buildUsers from './modules/users/interfaces/rest/UserBuild';
 import usersRoutes from './modules/users/interfaces/rest/UserRoutes';
 
@@ -32,6 +35,7 @@ app.use(apiKeyAuth);
 
 const locationsUC = buildLocations();
 const usersUC = buildUsers();
+const rolesUC = buildRole();
 const entriesUC = buildEntries({
   userRepo: usersUC.userRepo,
   locationRepo: locationsUC.locationRepo,
@@ -41,6 +45,7 @@ const exitsUC = buildExits();
 app.use('/entries', entriesRoutes(entriesUC));
 app.use('/exits', exitsRoutes(exitsUC));
 app.use('/locations', locationsRoutes(locationsUC));
+app.use('/roles', roleRoutes(rolesUC));
 app.use('/users', usersRoutes(usersUC));
 
 app.use(errorHandler);

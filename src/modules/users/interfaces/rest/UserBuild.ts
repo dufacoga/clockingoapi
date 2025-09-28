@@ -22,10 +22,7 @@ export default function buildUser() {
     createUser: new CreateUserUseCase({ userRepo, roleRepo }),
     updateUser: new UpdateUserUseCase({ userRepo, roleRepo }),
     softDeleteUser: new SoftDeleteUserUseCase({ userRepo }),
-    getRoleById: new GetRoleByIdUseCase({ roleRepo }),
-    listRoles: new ListRolesUseCase({ roleRepo }),
     userRepo,
-    roleRepo,
   };
 }
 
