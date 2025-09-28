@@ -10,7 +10,7 @@ const options: Options = {
       title: 'ClockInGo — API Tester',
       version: '1.0.0',
       description:
-        'Swagger UI para **probar** endpoints de Users, Locations, Entries y Exits.\n' +
+        'Swagger UI para **probar** endpoints de Users, Locations, Entries, Exits y Roles.\n' +
         'Usa el candado Authorize y coloca tu `x-api-key` para empezar.',
     },
     servers: [
@@ -22,6 +22,7 @@ const options: Options = {
       { name: 'Locations', description: 'Módulo Locations' },
       { name: 'Entries', description: 'Módulo Entries' },
       { name: 'Exits', description: 'Módulo Exits' },
+      { name: 'Roles', description: 'Módulo Roles' } // ← NUEVO
     ],
     components: {
       securitySchemes: {
@@ -123,18 +124,19 @@ const options: Options = {
               example: { ReviewedByAdmin: true, Result: 'OK' },
             },
           },
-        },
+        }
+        // Nota: Roles no requiere requestBodies porque solo exponemos GETs
       },
     },
     security: [{ ApiKeyAuth: [] }],
-    
+
     paths: {
+      // ===== USERS =====
       '/users': {
         get: {
           tags: ['Users'],
           summary: 'Listar usuarios',
-          description:
-            'Devuelve `{ items, page, pageSize, total }`. Solo registros con `IsDeleted=0`.',
+          description: 'Devuelve `{ items, page, pageSize, total }`. Solo registros con `IsDeleted=0`.',
           parameters: [
             { in: 'query', name: 'page', schema: { type: 'integer', example: 1 } },
             { in: 'query', name: 'pageSize', schema: { type: 'integer', example: 50 } },
@@ -178,13 +180,13 @@ const options: Options = {
           responses: { '200': { description: 'OK' }, '404': { description: 'No encontrado' } },
         },
       },
-      
+
+      // ===== LOCATIONS =====
       '/locations': {
         get: {
           tags: ['Locations'],
           summary: 'Listar locations',
-          description:
-            'Devuelve `{ items, page, pageSize, total }`. Solo registros con `IsDeleted=0`.',
+          description: 'Devuelve `{ items, page, pageSize, total }`. Solo registros con `IsDeleted=0`.',
           parameters: [
             { in: 'query', name: 'page', schema: { type: 'integer', example: 1 } },
             { in: 'query', name: 'pageSize', schema: { type: 'integer', example: 50 } },
@@ -228,13 +230,13 @@ const options: Options = {
           responses: { '200': { description: 'OK' }, '404': { description: 'No encontrado' } },
         },
       },
-      
+
+      // ===== ENTRIES =====
       '/entries': {
         get: {
           tags: ['Entries'],
           summary: 'Listar entries',
-          description:
-            'Devuelve `{ items, page, pageSize, total }`. Solo registros con `IsDeleted=0`.',
+          description: 'Devuelve `{ items, page, pageSize, total }`. Solo registros con `IsDeleted=0`.',
           parameters: [
             { in: 'query', name: 'page', schema: { type: 'integer', example: 1 } },
             { in: 'query', name: 'pageSize', schema: { type: 'integer', example: 50 } },
@@ -278,13 +280,13 @@ const options: Options = {
           responses: { '200': { description: 'OK' }, '404': { description: 'No encontrado' } },
         },
       },
-      
+
+      // ===== EXITS =====
       '/exits': {
         get: {
           tags: ['Exits'],
           summary: 'Listar exits',
-          description:
-            'Devuelve `{ items, page, pageSize, total }`. Solo registros con `IsDeleted=0`.',
+          description: 'Devuelve `{ items, page, pageSize, total }`. Solo registros con `IsDeleted=0`.',
           parameters: [
             { in: 'query', name: 'page', schema: { type: 'integer', example: 1 } },
             { in: 'query', name: 'pageSize', schema: { type: 'integer', example: 50 } },
@@ -328,6 +330,28 @@ const options: Options = {
           responses: { '200': { description: 'OK' }, '404': { description: 'No encontrado' } },
         },
       },
+
+      // ===== ROLES =====  ← NUEVO
+      '/roles': {
+        get: {
+          tags: ['Roles'],
+          summary: 'Listar roles',
+          description: 'Devuelve `{ items, page, pageSize, total }`.',
+          parameters: [
+            { in: 'query', name: 'page', schema: { type: 'integer', example: 1 } },
+            { in: 'query', name: 'pageSize', schema: { type: 'integer', example: 50 } },
+          ],
+          responses: { '200': { description: 'OK' } },
+        },
+      },
+      '/roles/{id}': {
+        get: {
+          tags: ['Roles'],
+          summary: 'Obtener role por ID',
+          parameters: [{ in: 'path', name: 'id', required: true, schema: { type: 'integer', example: 1 } }],
+          responses: { '200': { description: 'OK' }, '404': { description: 'No encontrado' } },
+        },
+      }
     },
   },
   apis: [],
@@ -348,12 +372,6 @@ export const uiOptions: any = {
     defaultModelsExpandDepth: -1,
     defaultModelExpandDepth: -1,
   },
-  customCss: `
-    .topbar { background: linear-gradient(90deg,#111827,#0ea5e9)!important }
-    .topbar-wrapper .link span { color: #fff !important; font-weight: 700; }
-    .swagger-ui .btn.authorize { background:#10b981!important; border-radius:12px; }
-    .swagger-ui .model-box, .swagger-ui .response-col_description__inner { border-radius: 12px; }
-  `,
   customSiteTitle: 'ClockInGo — API Tester 🚀',
 };
 
