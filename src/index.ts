@@ -1,6 +1,6 @@
 import 'dotenv/config';
 import express, { Request, Response, NextFunction } from 'express';
-import cors from 'cors';
+import cors, { CorsOptions } from 'cors';
 import helmet from 'helmet';
 import bodyParser from 'body-parser';
 
@@ -26,7 +26,22 @@ import { swaggerUi, specs, uiOptions } from './shared/interfaces/swagger';
 
 const app = express();
 app.use(helmet());
-app.use(cors({ origin: '*', methods: ['GET','POST','PATCH','DELETE'] }));
+const rawAllowedOrigins = process.env.CORS_ALLOWED_ORIGINS;
+const allowedOrigins = rawAllowedOrigins
+  ? rawAllowedOrigins.split(',').map((origin) => origin.trim()).filter(Boolean)
+  : '*';
+
+const allowedHeaders = ['Content-Type', 'X-API-Key', 'Authorization'];
+const allowCredentials = process.env.CORS_ALLOW_CREDENTIALS === 'true';
+
+const corsOptions: CorsOptions = {
+  origin: allowedOrigins,
+  methods: ['GET', 'POST', 'PATCH', 'DELETE'],
+  allowedHeaders,
+  credentials: allowCredentials,
+};
+
+app.use(cors(corsOptions));
 app.use(bodyParser.json());
 
 app.use('/swagger', swaggerUi.serve, swaggerUi.setup(specs, uiOptions));
