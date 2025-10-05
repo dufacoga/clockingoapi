@@ -42,3 +42,8 @@ coverage/
 test/
 tests/
 __tests__/node_modules/
+
+# Docker local files
+docker-compose.override.yml
+.env.docker
+db_data/

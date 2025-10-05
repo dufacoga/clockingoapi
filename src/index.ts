@@ -22,6 +22,8 @@ import roleRoutes from './modules/users/interfaces/rest/RoleRoutes';
 import buildUsers from './modules/users/interfaces/rest/UserBuild';
 import usersRoutes from './modules/users/interfaces/rest/UserRoutes';
 
+import healthRoutes from './shared/interfaces/rest/healthRoutes';
+
 import { swaggerUi, specs, uiOptions } from './shared/interfaces/swagger';
 
 const app = express();
@@ -68,6 +70,7 @@ app.use('/exits', exitsRoutes(exitsUC));
 app.use('/locations', locationsRoutes(locationsUC));
 app.use('/roles', roleRoutes(rolesUC));
 app.use('/users', usersRoutes(usersUC));
+app.use(healthRoutes());
 
 app.use(errorHandler);
 
