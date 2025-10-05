@@ -8,6 +8,11 @@ services:
       - "3306:3306"
     volumes:
       - db_data:/var/lib/mysql
+      - ../scripts/migrations/00-create-dbs.sql:/docker-entrypoint-initdb.d/00-create-dbs.sql:ro
+      - ../scripts/migrations/11-schema-dev.sql:/docker-entrypoint-initdb.d/11-schema-dev.sql:ro
+      - ../scripts/seeds/12-seed-dev.sql:/docker-entrypoint-initdb.d/12-seed-dev.sql:ro
+      - ../scripts/migrations/21-schema-test.sql:/docker-entrypoint-initdb.d/21-schema-test.sql:ro
+      - ../scripts/seeds/22-seed-test.sql:/docker-entrypoint-initdb.d/22-seed-test.sql:ro
     healthcheck:
       test: ["CMD-SHELL", "mariadb-admin ping -h 127.0.0.1 --protocol=TCP -uroot -p\"${MARIADB_ROOT_PASSWORD:-root}\" >/dev/null 2>&1 || exit 1"]
       interval: 5s
