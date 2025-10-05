@@ -1,12 +1,15 @@
 import { IRoleRepository } from '../../domain/repositories/IRoleRepository';
 import { Role } from '../../domain/entities/Role';
 
-type Params = { page?: number; pageSize?: number };
+interface ListRolesParams {
+  page?: number;
+  pageSize?: number;
+}
 
 export default class ListRolesUseCase {
   constructor(private deps: { roleRepo: IRoleRepository }) {}
 
-  async execute({ page = 1, pageSize = 50 }: Params): Promise<{
+  async execute({ page = 1, pageSize = 50 }: ListRolesParams): Promise<{
     items: Role[];
     total: number;
     page: number;

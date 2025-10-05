@@ -4,14 +4,14 @@ import { ILocationRepository } from '../../../locations/domain/repositories/ILoc
 import { IEntryRepository } from '../../../entries/domain/repositories/IEntryRepository';
 import { IExitRepository } from '../../domain/repositories/IExitRepository';
 
-type Deps = {
+interface RegisterExitDeps {
   userRepo: IUserRepository;
   locationRepo: ILocationRepository;
   entryRepo: IEntryRepository;
   exitRepo: IExitRepository;
-};
+}
 
-type RegisterExitInput = {
+interface RegisterExitInput {
   userId: number;
   locationId?: number | null;
   locationCode?: string | null;
@@ -19,7 +19,7 @@ type RegisterExitInput = {
   result?: string | null;
   irregularBehavior?: boolean;
   deviceId?: string | null;
-};
+}
 
 export default class RegisterExitUseCase {
   private userRepo: IUserRepository;
@@ -27,11 +27,17 @@ export default class RegisterExitUseCase {
   private entryRepo: IEntryRepository;
   private exitRepo: IExitRepository;
 
-  constructor({ userRepo, locationRepo, entryRepo, exitRepo }: Deps) {
+  constructor({ userRepo, locationRepo, entryRepo, exitRepo }: RegisterExitDeps) {
     this.userRepo = userRepo;
     this.locationRepo = locationRepo;
     this.entryRepo = entryRepo;
     this.exitRepo = exitRepo;
+  }
+
+  private buildError(message: string, status: number) {
+    const e = new Error(message) as Error & { status?: number };
+    e.status = status;
+    return e;
   }
 
   async execute({
@@ -45,32 +51,24 @@ export default class RegisterExitUseCase {
   }: RegisterExitInput): Promise<Exit> {
     const user = await this.userRepo.findById(userId);
     if (!user) {
-      const e = new Error('USER_NOT_FOUND') as Error & { status?: number };
-      e.status = 404;
-      throw e;
+      throw this.buildError('USER_NOT_FOUND', 404);
     }
 
     let loc = null;
     if (locationId != null) loc = await this.locationRepo.findById(locationId);
     if (!loc && locationCode) loc = await this.locationRepo.findByCode(locationCode);
     if (!loc) {
-      const e = new Error('LOCATION_NOT_FOUND') as Error & { status?: number };
-      e.status = 404;
-      throw e;
+      throw this.buildError('LOCATION_NOT_FOUND', 404);
     }
 
     const lastEntry = await this.entryRepo.findLastByUser(userId);
     if (!lastEntry) {
-      const e = new Error('NO_OPEN_ENTRY') as Error & { status?: number };
-      e.status = 409;
-      throw e;
+      throw this.buildError('NO_OPEN_ENTRY', 409);
     }
 
     const existingExit = await this.exitRepo.findByEntryId(lastEntry.Id!);
     if (existingExit) {
-      const e = new Error('EXIT_ALREADY_REGISTERED') as Error & { status?: number };
-      e.status = 409;
-      throw e;
+      throw this.buildError('EXIT_ALREADY_REGISTERED', 409);
     }
 
     const markIrregular = irregularBehavior || lastEntry.LocationId !== loc.Id;

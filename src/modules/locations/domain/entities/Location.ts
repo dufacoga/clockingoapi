@@ -38,13 +38,17 @@ export class Location extends BaseEntity {
     this.IsDeleted = !!IsDeleted;
   }
 
-  static get tableName() {
-    return 'Locations';
-  }
+  static readonly tableName = 'Locations';
 
-  static get columns() {
-    return ['Id', 'Code', 'Address', 'City', 'CreatedBy', 'IsCompanyOffice', 'IsDeleted'];
-  }
+  static readonly columns = [
+    'Id',
+    'Code',
+    'Address',
+    'City',
+    'CreatedBy',
+    'IsCompanyOffice',
+    'IsDeleted',
+  ];
 
   static fromRow(row: Partial<LocationProps> = {}): Location {
     return new Location({

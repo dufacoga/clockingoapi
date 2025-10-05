@@ -65,8 +65,8 @@ export default class EntryRepositoryMaria implements IEntryRepository {
       .offset((page - 1) * pageSize);
 
     return {
-      items: rows.map(r => this.rowToEntity(r)),
-      total: Number(count)
+      items: rows.map((row) => this.rowToEntity(row)),
+      total: Number(count),
     };
   }
 
@@ -74,14 +74,14 @@ export default class EntryRepositoryMaria implements IEntryRepository {
     const toInsert: Partial<EntryRow> = {
       UserId: data.UserId,
       LocationId: data.LocationId,
-      EntryTime: (Entry as any)._toISO?.(data.EntryTime) ?? null,
+      EntryTime: Entry._toISO(data.EntryTime) ?? null,
       Selfie: data.Selfie ?? null,
       IsSynced: data.IsSynced ? 1 : 0,
       DeviceId: data.DeviceId ?? null,
-      IsDeleted: 0
+      IsDeleted: 0,
     };
 
-    const [id] = await knex<EntryRow>(this.table()).insert(toInsert as any);
+    const [id] = await knex<EntryRow>(this.table()).insert(toInsert);
     const created = await this.findById(id);
     if (!created) throw new Error('Failed to fetch created Entry');
     return created;
@@ -92,16 +92,16 @@ export default class EntryRepositoryMaria implements IEntryRepository {
       ...(patch.UserId !== undefined && { UserId: patch.UserId }),
       ...(patch.LocationId !== undefined && { LocationId: patch.LocationId }),
       ...(patch.EntryTime !== undefined && {
-        EntryTime: (Entry as any)._toISO?.(patch.EntryTime ?? null) ?? null
+        EntryTime: Entry._toISO(patch.EntryTime ?? null) ?? null,
       }),
       ...(patch.Selfie !== undefined && { Selfie: patch.Selfie ?? null }),
       ...(patch.IsSynced !== undefined && { IsSynced: patch.IsSynced ? 1 : 0 }),
       ...(patch.DeviceId !== undefined && { DeviceId: patch.DeviceId ?? null }),
       ...(patch.IsDeleted !== undefined && { IsDeleted: patch.IsDeleted ? 1 : 0 }),
-      UpdatedAt: knex.fn.now() as unknown as string
+      UpdatedAt: knex.fn.now() as unknown as string,
     };
 
-    await knex<EntryRow>(this.table()).where({ Id: id }).update(updateData as any);
+    await knex<EntryRow>(this.table()).where({ Id: id }).update(updateData);
     const updated = await this.findById(id);
     if (!updated) throw new Error('Entry not found after update');
     return updated;

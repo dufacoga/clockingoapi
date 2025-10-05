@@ -2,10 +2,10 @@ import { IEntryRepository } from '../../domain/repositories/IEntryRepository';
 import { IExitRepository } from '../../../exits/domain/repositories/IExitRepository';
 import { Entry } from '../../domain/entities/Entry';
 
-type Result = {
+interface Result {
   entry: Entry | null;
   isOpen: boolean;
-};
+}
 
 export default class GetLastEntryByUserUseCase {
   private entryRepo: IEntryRepository;

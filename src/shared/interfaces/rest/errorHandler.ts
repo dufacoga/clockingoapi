@@ -1,17 +1,22 @@
 import { Request, Response, NextFunction } from 'express';
 
+type AppError = Error & { status?: number; stack?: string };
+
 export default function errorHandler(
-  err: any,
-  req: Request,
+  err: AppError,
+  _req: Request,
   res: Response,
   _next: NextFunction
 ) {
-  const status = err.status || 500;
+  const status = err.status ?? 500;
 
-  const payload: Record<string, any> = {
-    error: err.message || 'INTERNAL_ERROR',
-    ...(process.env.NODE_ENV !== 'production' ? { stack: err.stack } : {})
+  const payload: Record<string, unknown> = {
+    error: err.message ?? 'INTERNAL_ERROR',
   };
+
+  if (process.env.NODE_ENV !== 'production' && err.stack) {
+    payload.stack = err.stack;
+  }
 
   res.status(status).json(payload);
 }

@@ -15,13 +15,9 @@ export class Role extends BaseEntity {
     this.Name = Name;
   }
 
-  static get tableName() {
-    return 'Roles';
-  }
+  static readonly tableName = 'Roles';
 
-  static get columns() {
-    return ['Id', 'Name'];
-  }
+  static readonly columns = ['Id', 'Name'];
 
   static fromRow(row: Partial<RoleProps> = {}): Role {
     return new Role({

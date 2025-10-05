@@ -1,7 +1,8 @@
 import swaggerJSDoc, { Options } from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
+import type { SwaggerUiOptions } from 'swagger-ui-express';
 
-const SERVER_URL = process.env.API_BASE_URL || 'http://localhost:3000';
+const SERVER_URL = process.env.API_BASE_URL ?? 'http://localhost:3000';
 
 const options: Options = {
   definition: {
@@ -359,7 +360,7 @@ const options: Options = {
 
 export const specs = swaggerJSDoc(options);
 
-export const uiOptions: any = {
+export const uiOptions: SwaggerUiOptions = {
   explorer: true,
   swaggerOptions: {
     persistAuthorization: true,

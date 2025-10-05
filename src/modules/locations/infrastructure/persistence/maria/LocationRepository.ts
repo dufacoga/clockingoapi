@@ -72,7 +72,7 @@ export default class LocationRepositoryMaria implements ILocationRepository {
       IsDeleted: 0,
     };
 
-    const [id] = await knex<LocationRow>(this.table()).insert(toInsert as any);
+    const [id] = await knex<LocationRow>(this.table()).insert(toInsert);
     const created = await this.findById(id);
     if (!created) throw new Error('Failed to fetch created Location');
     return created;
@@ -88,7 +88,7 @@ export default class LocationRepositoryMaria implements ILocationRepository {
       ...(patch.IsDeleted !== undefined && { IsDeleted: patch.IsDeleted ? 1 : 0 })
     };
 
-    await knex<LocationRow>(this.table()).where({ Id: id }).update(updateData as any);
+    await knex<LocationRow>(this.table()).where({ Id: id }).update(updateData);
     const updated = await this.findById(id);
     if (!updated) throw new Error('Location not found after update');
     return updated;

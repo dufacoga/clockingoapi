@@ -30,13 +30,17 @@ export class User extends BaseEntity {
     this.IsDeleted = !!IsDeleted;
   }
 
-  static get tableName() {
-    return 'Users';
-  }
+  static readonly tableName = 'Users';
 
-  static get columns() {
-    return ['Id', 'Name', 'Phone', 'Username', 'AuthToken', 'RoleId', 'IsDeleted'];
-  }
+  static readonly columns = [
+    'Id',
+    'Name',
+    'Phone',
+    'Username',
+    'AuthToken',
+    'RoleId',
+    'IsDeleted',
+  ];
 
   static fromRow(row: Partial<UserProps> = {}): User {
     return new User({

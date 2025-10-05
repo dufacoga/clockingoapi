@@ -9,10 +9,7 @@ import {
   paginationQuerySchema,
 } from '../../../../shared/interfaces/rest/schemas/CommonSchemas';
 
-import {
-  createLocationSchema,
-  updateLocationSchema,
-} from './schemas/LocationSchema';
+import { createLocationSchema, updateLocationSchema, UpdateLocationDTO } from './schemas/LocationSchema';
 
 import { LocationUC } from './LocationBuild';
 
@@ -78,8 +75,8 @@ export default function locationRoutes(uc: LocationUC) {
     validate(idParamSchema, 'params'),
     validate(updateLocationSchema, 'body'),
     asyncHandler(async (_req, res) => {
-      const p = getValidated<{ id: number } & Record<string, unknown>>(res);
-      const updated = await uc.updateLocation.execute(Number(p.id), p as any);
+      const { id, ...patch } = getValidated<{ id: number } & UpdateLocationDTO>(res);
+      const updated = await uc.updateLocation.execute(Number(id), patch);
       res.json(updated);
     })
   );

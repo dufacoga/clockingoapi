@@ -2,18 +2,16 @@ import { User } from '../../domain/entities/User';
 import { IUserRepository } from '../../domain/repositories/IUserRepository';
 import { IRoleRepository } from '../../domain/repositories/IRoleRepository';
 
-type CreateUserInput = {
+interface CreateUserInput {
   name: string;
   phone?: string | null;
   username: string;
   authToken: string;
   roleId: number;
-};
+}
 
 export default class CreateUserUseCase {
-  constructor(
-    private deps: { userRepo: IUserRepository; roleRepo: IRoleRepository }
-  ) {}
+  constructor(private deps: { userRepo: IUserRepository; roleRepo: IRoleRepository }) {}
 
   private err(message: string, status: number) {
     const e = new Error(message) as Error & { status?: number };

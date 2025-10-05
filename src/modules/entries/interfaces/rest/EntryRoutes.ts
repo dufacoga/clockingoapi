@@ -61,8 +61,8 @@ export default function entryRoutes(uc: EntryUC) {
     validate(idParamSchema, 'params'),
     validate(updateEntrySchema, 'body'),
     asyncHandler(async (_req, res) => {
-      const p = getValidated<{ id: number } & UpdateEntryDTO>(res);
-      const updated = await uc.updateEntry.execute(Number(p.id), p);
+      const { id, ...patch } = getValidated<{ id: number } & UpdateEntryDTO>(res);
+      const updated = await uc.updateEntry.execute(Number(id), patch);
       res.json(updated);
     })
   );

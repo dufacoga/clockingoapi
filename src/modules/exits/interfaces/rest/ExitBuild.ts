@@ -15,24 +15,29 @@ import { IUserRepository } from '../../../users/domain/repositories/IUserReposit
 import { ILocationRepository } from '../../../locations/domain/repositories/ILocationRepository';
 import { IEntryRepository } from '../../../entries/domain/repositories/IEntryRepository';
 
-type Deps =
-  | {
-      userRepo: IUserRepository;
-      locationRepo: ILocationRepository;
-      entryRepo: IEntryRepository;
-    }
-  | undefined;
-  
-export default function buildExit(deps?: Deps) {
-  const exitRepo = new ExitRepositoryMaria();
-  const userRepo: IUserRepository =
-    (deps as any)?.userRepo ?? new UserRepositoryMaria();
-  const locationRepo: ILocationRepository =
-    (deps as any)?.locationRepo ?? new LocationRepositoryMaria();
-  const entryRepo: IEntryRepository =
-    (deps as any)?.entryRepo ?? new EntryRepositoryMaria();
+interface ExitBuildDeps {
+  userRepo?: IUserRepository;
+  locationRepo?: ILocationRepository;
+  entryRepo?: IEntryRepository;
+}
 
-  const api = {
+export interface ExitUC {
+  listExits: ListExitsUseCase;
+  getExitById: GetExitByIdUseCase;
+  getExitByEntryId: GetExitByEntryIdUseCase;
+  registerExit: RegisterExitUseCase;
+  updateExit: UpdateExitUseCase;
+  softDeleteExit: SoftDeleteExitUseCase;
+  exitRepo: ExitRepositoryMaria;
+}
+
+export default function buildExit(deps: ExitBuildDeps = {}): ExitUC {
+  const exitRepo = new ExitRepositoryMaria();
+  const userRepo: IUserRepository = deps.userRepo ?? new UserRepositoryMaria();
+  const locationRepo: ILocationRepository = deps.locationRepo ?? new LocationRepositoryMaria();
+  const entryRepo: IEntryRepository = deps.entryRepo ?? new EntryRepositoryMaria();
+
+  return {
     listExits: new ListExitsUseCase({ exitRepo }),
     getExitById: new GetExitByIdUseCase({ exitRepo }),
     getExitByEntryId: new GetExitByEntryIdUseCase({ exitRepo }),
@@ -46,8 +51,4 @@ export default function buildExit(deps?: Deps) {
     softDeleteExit: new SoftDeleteExitUseCase({ exitRepo }),
     exitRepo,
   };
-
-  return api;
 }
-
-export type ExitUC = ReturnType<typeof buildExit>;

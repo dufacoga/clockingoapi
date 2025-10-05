@@ -35,19 +35,20 @@ export default class UpdateLocationUseCase {
     }
 
     const cleaned: UpdateLocationDTO = {};
-    for (const [k, v] of Object.entries(patch || {})) {
-      if (v === undefined) continue;
-      if (k === 'Id' || k === 'IsDeleted') continue;
-      (cleaned as any)[k] = v;
-    }
+    if (patch.Code !== undefined) cleaned.Code = patch.Code;
+    if (patch.Address !== undefined) cleaned.Address = patch.Address ?? null;
+    if (patch.City !== undefined) cleaned.City = patch.City ?? null;
+    if (patch.CreatedBy !== undefined) cleaned.CreatedBy = patch.CreatedBy;
+    if (patch.IsCompanyOffice !== undefined) cleaned.IsCompanyOffice = patch.IsCompanyOffice;
 
     if (Object.keys(cleaned).length === 0) {
       return loc;
     }
 
-    const ok = await this.locationRepo.update(id, cleaned);
-    if (!ok) throw this.buildError('LOCATION_UPDATE_FAILED', 500);
+    await this.locationRepo.update(id, cleaned);
+    const updated = await this.locationRepo.findById(id);
+    if (!updated) throw this.buildError('LOCATION_UPDATE_FAILED', 500);
 
-    return await this.locationRepo.findById(id) as Location;
+    return updated;
   }
 }

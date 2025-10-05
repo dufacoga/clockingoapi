@@ -11,36 +11,56 @@ import { IExitRepository } from '../../../exits/domain/repositories/IExitReposit
 import { IUserRepository } from '../../../users/domain/repositories/IUserRepository';
 import { ILocationRepository } from '../../../locations/domain/repositories/ILocationRepository';
 
-type Deps = {
+interface EntryBuildDeps {
   userRepo: IUserRepository;
   locationRepo: ILocationRepository;
   exitRepo?: IExitRepository | null;
-};
+}
 
-export default function buildEntry({ userRepo, locationRepo, exitRepo = null }: Deps) {
+export interface EntryUC {
+  listEntries: ListEntriesUseCase;
+  getEntryById: GetEntryByIdUseCase;
+  getLastEntryByUser: GetLastEntryByUserUseCase;
+  registerEntry: RegisterEntryUseCase;
+  updateEntry: UpdateEntryUseCase;
+  softDeleteEntry: SoftDeleteEntryUseCase;
+  entryRepo: EntryRepositoryMaria;
+  setExitRepo: (exitRepository: IExitRepository) => void;
+}
+
+export default function buildEntry({ userRepo, locationRepo, exitRepo = null }: EntryBuildDeps): EntryUC {
   const entryRepo = new EntryRepositoryMaria();
-  let getLastEntryByUser = new GetLastEntryByUserUseCase({ entryRepo, exitRepo });
-  const api = {
+  let currentExitRepo: IExitRepository | null = exitRepo;
+
+  let getLastEntryByUser = new GetLastEntryByUserUseCase({ entryRepo, exitRepo: currentExitRepo });
+  let registerEntry = new RegisterEntryUseCase({
+    userRepo,
+    locationRepo,
+    entryRepo,
+    exitRepo: currentExitRepo,
+  });
+
+  const api: EntryUC = {
     listEntries: new ListEntriesUseCase({ entryRepo }),
     getEntryById: new GetEntryByIdUseCase({ entryRepo }),
-    getLastEntryByUser,    
-    registerEntry: new RegisterEntryUseCase({ userRepo, locationRepo, entryRepo, exitRepo: exitRepo as any }),
+    getLastEntryByUser,
+    registerEntry,
     updateEntry: new UpdateEntryUseCase({ entryRepo }),
-    softDeleteEntry: new SoftDeleteEntryUseCase({ entryRepo }),    
-    entryRepo,    
-    setExitRepo(newExitRepo: IExitRepository) {
-      getLastEntryByUser = new GetLastEntryByUserUseCase({ entryRepo, exitRepo: newExitRepo });      
-      (api as any).getLastEntryByUser = getLastEntryByUser;      
-      (api as any).registerEntry = new RegisterEntryUseCase({
+    softDeleteEntry: new SoftDeleteEntryUseCase({ entryRepo }),
+    entryRepo,
+    setExitRepo(exitRepository: IExitRepository) {
+      currentExitRepo = exitRepository;
+      getLastEntryByUser = new GetLastEntryByUserUseCase({ entryRepo, exitRepo: currentExitRepo });
+      registerEntry = new RegisterEntryUseCase({
         userRepo,
         locationRepo,
         entryRepo,
-        exitRepo: newExitRepo,
+        exitRepo: currentExitRepo,
       });
+      this.getLastEntryByUser = getLastEntryByUser;
+      this.registerEntry = registerEntry;
     },
   };
 
   return api;
 }
-
-export type EntryUC = ReturnType<typeof buildEntry>;

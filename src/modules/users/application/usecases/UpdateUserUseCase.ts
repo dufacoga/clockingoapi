@@ -41,14 +41,14 @@ export default class UpdateUserUseCase {
     }
     
     const cleaned: UpdateUserDTO = {};
-    for (const [k, v] of Object.entries(patch || {})) {
-      if (v === undefined) continue;
-      if (k === 'Id' || k === 'IsDeleted') continue;
-      (cleaned as any)[k] = v;
-    }
+    if (patch.Name !== undefined) cleaned.Name = patch.Name;
+    if (patch.Phone !== undefined) cleaned.Phone = patch.Phone ?? null;
+    if (patch.Username !== undefined) cleaned.Username = patch.Username;
+    if (patch.AuthToken !== undefined) cleaned.AuthToken = patch.AuthToken;
+    if (patch.RoleId !== undefined) cleaned.RoleId = patch.RoleId;
 
     if (Object.keys(cleaned).length === 0) return user;
-    
+
     try {
       const updated = await userRepo.update(id, cleaned);
       return updated;
