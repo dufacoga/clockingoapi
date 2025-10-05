@@ -38,17 +38,21 @@ export class Location extends BaseEntity {
     this.IsDeleted = !!IsDeleted;
   }
 
-  static readonly tableName = 'Locations';
+  static override get tableName(): string {
+    return 'Locations';
+  }
 
-  static readonly columns = [
-    'Id',
-    'Code',
-    'Address',
-    'City',
-    'CreatedBy',
-    'IsCompanyOffice',
-    'IsDeleted',
-  ];
+  static override get columns(): string[] {
+    return [
+      'Id',
+      'Code',
+      'Address',
+      'City',
+      'CreatedBy',
+      'IsCompanyOffice',
+      'IsDeleted',
+    ];
+  }
 
   static fromRow(row: Partial<LocationProps> = {}): Location {
     return new Location({

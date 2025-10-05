@@ -15,9 +15,16 @@ export class Role extends BaseEntity {
     this.Name = Name;
   }
 
-  static readonly tableName = 'Roles';
+  static override get tableName(): string {
+    return 'Roles';
+  }
 
-  static readonly columns = ['Id', 'Name'];
+  static override get columns(): string[] {
+    return [
+      'Id',
+      'Name',
+    ];
+  }
 
   static fromRow(row: Partial<RoleProps> = {}): Role {
     return new Role({

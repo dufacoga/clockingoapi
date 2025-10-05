@@ -46,19 +46,23 @@ export class Entry extends BaseEntity {
     this.IsDeleted = !!IsDeleted;
   }
 
-  static readonly tableName = 'Entries';
+  static override get tableName(): string {
+    return 'Entries';
+  }
 
-  static readonly columns = [
-    'Id',
-    'UserId',
-    'LocationId',
-    'EntryTime',
-    'Selfie',
-    'UpdatedAt',
-    'IsSynced',
-    'DeviceId',
-    'IsDeleted',
-  ];
+  static override get columns(): string[] {
+    return [
+      'Id',
+      'UserId',
+      'LocationId',
+      'EntryTime',
+      'Selfie',
+      'UpdatedAt',
+      'IsSynced',
+      'DeviceId',
+      'IsDeleted',
+    ];
+  }
 
   static fromRow(row: Partial<EntryProps> = {}): Entry {
     return new Entry({

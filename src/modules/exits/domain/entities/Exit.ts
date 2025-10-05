@@ -58,22 +58,26 @@ export class Exit extends BaseEntity {
     this.IsDeleted = !!IsDeleted;
   }
 
-  static readonly tableName = 'Exits';
+  static override get tableName(): string {
+    return 'Exits';
+  }
 
-  static readonly columns = [
-    'Id',
-    'UserId',
-    'LocationId',
-    'ExitTime',
-    'EntryId',
-    'Result',
-    'IrregularBehavior',
-    'ReviewedByAdmin',
-    'UpdatedAt',
-    'IsSynced',
-    'DeviceId',
-    'IsDeleted',
-  ];
+  static override get columns(): string[] {
+    return [
+      'Id',
+      'UserId',
+      'LocationId',
+      'ExitTime',
+      'EntryId',
+      'Result',
+      'IrregularBehavior',
+      'ReviewedByAdmin',
+      'UpdatedAt',
+      'IsSynced',
+      'DeviceId',
+      'IsDeleted',
+    ];
+  }
 
   static fromRow(row: Partial<ExitProps> = {}): Exit {
     return new Exit({
