@@ -8,10 +8,8 @@ export default [
   },
   
   js.configs.recommended,
-  
   ...tseslint.configs.recommendedTypeChecked,
   ...tseslint.configs.stylisticTypeChecked,
-  
   {
     files: ['src/**/*.{ts,tsx}'],
     languageOptions: {
