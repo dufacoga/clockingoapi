@@ -9,10 +9,7 @@ import {
   paginationQuerySchema,
 } from '../../../../shared/interfaces/rest/schemas/CommonSchemas';
 
-import {
-  createUserSchema,
-  updateUserSchema,
-} from './schemas/UserSchema';
+import { createUserSchema, updateUserSchema, UpdateUserDTO } from './schemas/UserSchema';
 
 import { UserUC } from './UserBuild';
 
@@ -71,14 +68,14 @@ export default function userRoutes(uc: UserUC) {
       res.status(201).json(created);
     })
   );
-  
+
   r.patch(
     '/:id',
     validate(idParamSchema, 'params'),
     validate(updateUserSchema, 'body'),
     asyncHandler(async (_req, res) => {
-      const p = getValidated<{ id: number } & Record<string, unknown>>(res);
-      const updated = await uc.updateUser.execute(Number(p.id), p as any);
+      const { id, ...patch } = getValidated<{ id: number } & UpdateUserDTO>(res);
+      const updated = await uc.updateUser.execute(Number(id), patch);
       res.json(updated);
     })
   );

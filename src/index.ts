@@ -1,5 +1,5 @@
 import 'dotenv/config';
-import express, { Request, Response, NextFunction } from 'express';
+import express from 'express';
 import cors, { CorsOptions } from 'cors';
 import helmet from 'helmet';
 import bodyParser from 'body-parser';
@@ -48,14 +48,20 @@ app.use('/swagger', swaggerUi.serve, swaggerUi.setup(specs, uiOptions));
 
 app.use(apiKeyAuth);
 
-const locationsUC = buildLocations();
 const usersUC = buildUsers();
+const locationsUC = buildLocations({ userRepo: usersUC.userRepo });
 const rolesUC = buildRole();
 const entriesUC = buildEntries({
   userRepo: usersUC.userRepo,
   locationRepo: locationsUC.locationRepo,
 });
-const exitsUC = buildExits();
+const exitsUC = buildExits({
+  userRepo: usersUC.userRepo,
+  locationRepo: locationsUC.locationRepo,
+  entryRepo: entriesUC.entryRepo,
+});
+
+entriesUC.setExitRepo(exitsUC.exitRepo);
 
 app.use('/entries', entriesRoutes(entriesUC));
 app.use('/exits', exitsRoutes(exitsUC));
@@ -65,7 +71,7 @@ app.use('/users', usersRoutes(usersUC));
 
 app.use(errorHandler);
 
-const PORT = Number(process.env.PORT || 3000);
+const PORT = Number(process.env.PORT ?? 3000);
 app.listen(PORT, () => console.log(`REST running on :${PORT}`));
 
 export default app;

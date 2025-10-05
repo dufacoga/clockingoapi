@@ -2,16 +2,6 @@ import { IExitRepository } from '../../domain/repositories/IExitRepository';
 import { Exit } from '../../domain/entities/Exit';
 import { UpdateExitDTO } from '../../interfaces/rest/schemas/ExitSchema';
 
-const EDITABLE_FIELDS = [
-  'ExitTime',
-  'Result',
-  'IrregularBehavior',
-  'ReviewedByAdmin',
-  'IsSynced',
-  'DeviceId',
-] as const;
-type EditableField = typeof EDITABLE_FIELDS[number];
-
 export default class UpdateExitUseCase {
   constructor(
     private deps: { exitRepo: IExitRepository & { update(id: number, patch: Partial<Exit>): Promise<Exit> } }
@@ -30,13 +20,24 @@ export default class UpdateExitUseCase {
     if (!exitEntity) throw this.buildError('EXIT_NOT_FOUND', 404);
     if (exitEntity.IsDeleted) throw this.buildError('EXIT_ALREADY_DELETED', 409);
     
-    const cleaned: Partial<Pick<Exit, EditableField>> = {};
-    for (const [k, v] of Object.entries(patch ?? {})) {
-      if (v === undefined) continue;
-      if ((EDITABLE_FIELDS as readonly string[]).includes(k)) {
-        const key = k as EditableField;
-        (cleaned as any)[key] = v as any;
-      }
+    const cleaned: Partial<Exit> = {};
+    if (patch.Result !== undefined) {
+      cleaned.Result = patch.Result ?? null;
+    }
+    if (patch.IrregularBehavior !== undefined) {
+      cleaned.IrregularBehavior = patch.IrregularBehavior;
+    }
+    if (patch.ReviewedByAdmin !== undefined) {
+      cleaned.ReviewedByAdmin = patch.ReviewedByAdmin;
+    }
+    if (patch.IsSynced !== undefined) {
+      cleaned.IsSynced = patch.IsSynced;
+    }
+    if (patch.DeviceId !== undefined) {
+      cleaned.DeviceId = patch.DeviceId ?? null;
+    }
+    if (patch.IsDeleted !== undefined) {
+      cleaned.IsDeleted = patch.IsDeleted;
     }
 
     if (Object.keys(cleaned).length === 0) {
@@ -44,7 +45,7 @@ export default class UpdateExitUseCase {
     }
 
     try {
-      const updated = await exitRepo.update(id, cleaned as Partial<Exit>);
+      const updated = await exitRepo.update(id, cleaned);
       return updated;
     } catch {
       throw this.buildError('EXIT_UPDATE_FAILED', 500);

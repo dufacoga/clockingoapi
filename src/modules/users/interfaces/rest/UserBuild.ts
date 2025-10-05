@@ -8,9 +8,6 @@ import UpdateUserUseCase from '../../application/usecases/UpdateUserUseCase';
 import ListUsersUseCase from '../../application/usecases/ListUsersUseCase';
 import SoftDeleteUserUseCase from '../../application/usecases/SoftDeleteUserUseCase';
 
-import GetRoleByIdUseCase from '../../application/usecases/GetRoleByIdUseCase';
-import ListRolesUseCase from '../../application/usecases/ListRolesUseCase';
-
 export default function buildUser() {
   const userRepo = new UserRepositoryMaria();
   const roleRepo = new RoleRepositoryMaria();

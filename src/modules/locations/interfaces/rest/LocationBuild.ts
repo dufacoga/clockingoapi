@@ -6,22 +6,32 @@ import GetLocationByCodeUseCase from '../../application/usecases/GetLocationByCo
 import UpdateLocationUseCase from '../../application/usecases/UpdateLocationUseCase';
 import ListLocationsUseCase from '../../application/usecases/ListLocationsUseCase';
 import SoftDeleteLocationUseCase from '../../application/usecases/SoftDeleteLocationUseCase';
+import { IUserRepository } from '../../../users/domain/repositories/IUserRepository';
 
-export default function buildLocation() {
+export interface LocationUC {
+  createLocation: CreateLocationUseCase;
+  getLocationById: GetLocationByIdUseCase;
+  getLocationByCode: GetLocationByCodeUseCase;
+  updateLocation: UpdateLocationUseCase;
+  listLocations: ListLocationsUseCase;
+  softDeleteLocation: SoftDeleteLocationUseCase;
+  locationRepo: LocationRepositoryMaria;
+}
+
+interface LocationBuildDeps {
+  userRepo: IUserRepository;
+}
+
+export default function buildLocation({ userRepo }: LocationBuildDeps): LocationUC {
   const locationRepo = new LocationRepositoryMaria();
 
   return {
-    createLocation: new CreateLocationUseCase({ locationRepo, userRepo: null as any }),
+    createLocation: new CreateLocationUseCase({ locationRepo, userRepo }),
     getLocationById: new GetLocationByIdUseCase({ locationRepo }),
     getLocationByCode: new GetLocationByCodeUseCase({ locationRepo }),
     updateLocation: new UpdateLocationUseCase({ locationRepo }),
     listLocations: new ListLocationsUseCase({ locationRepo }),
     softDeleteLocation: new SoftDeleteLocationUseCase({ locationRepo }),
     locationRepo,
-    setUserRepo(userRepo: any) {
-      (this as any).createLocation = new CreateLocationUseCase({ locationRepo, userRepo });
-    }
   };
 }
-
-export type LocationUC = ReturnType<typeof buildLocation>;

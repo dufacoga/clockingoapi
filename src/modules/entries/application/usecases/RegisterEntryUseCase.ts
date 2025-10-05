@@ -8,7 +8,7 @@ interface RegisterEntryDeps {
   userRepo: IUserRepository;
   locationRepo: ILocationRepository;
   entryRepo: IEntryRepository;
-  exitRepo: IExitRepository;
+  exitRepo: IExitRepository | null;
 }
 
 interface RegisterEntryInput {
@@ -24,13 +24,19 @@ export default class RegisterEntryUseCase {
   private userRepo: IUserRepository;
   private locationRepo: ILocationRepository;
   private entryRepo: IEntryRepository;
-  private exitRepo: IExitRepository;
+  private exitRepo: IExitRepository | null;
 
   constructor({ userRepo, locationRepo, entryRepo, exitRepo }: RegisterEntryDeps) {
     this.userRepo = userRepo;
     this.locationRepo = locationRepo;
     this.entryRepo = entryRepo;
     this.exitRepo = exitRepo;
+  }
+
+  private buildError(message: string, status: number) {
+    const e = new Error(message) as Error & { status?: number };
+    e.status = status;
+    return e;
   }
 
   async execute({
@@ -43,27 +49,24 @@ export default class RegisterEntryUseCase {
   }: RegisterEntryInput): Promise<Entry> {
     const user = await this.userRepo.findById(userId);
     if (!user) {
-      const e = new Error('USER_NOT_FOUND') as Error & { status?: number };
-      e.status = 404;
-      throw e;
+      throw this.buildError('USER_NOT_FOUND', 404);
     }
     
     let loc = null;
     if (locationId != null) loc = await this.locationRepo.findById(locationId);
     if (!loc && locationCode) loc = await this.locationRepo.findByCode(locationCode);
     if (!loc) {
-      const e = new Error('LOCATION_NOT_FOUND') as Error & { status?: number };
-      e.status = 404;
-      throw e;
+      throw this.buildError('LOCATION_NOT_FOUND', 404);
     }
-    
+
     const lastEntry = await this.entryRepo.findLastByUser(userId);
     if (lastEntry) {
+      if (!this.exitRepo) {
+        throw this.buildError('EXIT_REPOSITORY_NOT_CONFIGURED', 500);
+      }
       const relatedExit = await this.exitRepo.findByEntryId(lastEntry.Id!);
       if (!relatedExit) {
-        const e = new Error('OPEN_ENTRY_EXISTS') as Error & { status?: number };
-        e.status = 409;
-        throw e;
+        throw this.buildError('OPEN_ENTRY_EXISTS', 409);
       }
     }
     

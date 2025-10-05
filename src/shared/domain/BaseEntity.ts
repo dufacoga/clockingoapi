@@ -29,7 +29,9 @@ export abstract class BaseEntity {
     throw new Error('Implement columns');
   }
 
-  validate(): void { }
+  validate(): void {
+    throw new Error('Validate method not implemented');
+  }
   
   static _toBool = toBool;
   static _fromBool = fromBool;

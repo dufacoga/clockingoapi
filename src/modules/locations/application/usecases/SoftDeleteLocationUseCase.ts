@@ -1,5 +1,4 @@
 import { ILocationRepository } from '../../domain/repositories/ILocationRepository';
-import { Location } from '../../domain/entities/Location';
 
 export default class SoftDeleteLocationUseCase {
   constructor(private deps: { locationRepo: ILocationRepository }) {}

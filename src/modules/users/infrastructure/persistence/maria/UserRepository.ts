@@ -59,7 +59,7 @@ export default class UserRepositoryMaria implements IUserRepository {
       .limit(pageSize)
       .offset((page - 1) * pageSize);
 
-    return { items: rows.map(r => this.rowToEntity(r)), total: Number(count) };
+    return { items: rows.map((row) => this.rowToEntity(row)), total: Number(count) };
   }
 
   async create(data: User): Promise<User> {
@@ -72,7 +72,7 @@ export default class UserRepositoryMaria implements IUserRepository {
       IsDeleted: 0
     };
 
-    const [id] = await knex<UserRow>(this.table()).insert(toInsert as any);
+    const [id] = await knex<UserRow>(this.table()).insert(toInsert);
     const created = await this.findById(id);
     if (!created) throw new Error('Failed to fetch created User');
     return created;
@@ -88,7 +88,7 @@ export default class UserRepositoryMaria implements IUserRepository {
       ...(patch.IsDeleted !== undefined && { IsDeleted: patch.IsDeleted ? 1 : 0 })
     };
 
-    await knex<UserRow>(this.table()).where({ Id: id }).update(updateData as any);
+    await knex<UserRow>(this.table()).where({ Id: id }).update(updateData);
     const updated = await this.findById(id);
     if (!updated) throw new Error('User not found after update');
     return updated;

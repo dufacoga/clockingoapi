@@ -74,8 +74,8 @@ export default function exitRoutes(uc: ExitUC) {
     validate(idParamSchema, 'params'),
     validate(updateExitSchema, 'body'),
     asyncHandler(async (_req, res) => {
-      const p = getValidated<{ id: number } & UpdateExitDTO>(res);
-      const updated = await uc.updateExit.execute(Number(p.id), p);
+      const { id, ...patch } = getValidated<{ id: number } & UpdateExitDTO>(res);
+      const updated = await uc.updateExit.execute(Number(id), patch);
       res.json(updated);
     })
   );

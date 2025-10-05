@@ -71,8 +71,8 @@ export default class ExitRepositoryMaria implements IExitRepository {
       .offset((page - 1) * pageSize);
 
     return {
-      items: rows.map(r => this.rowToEntity(r)),
-      total: Number(count)
+      items: rows.map((row) => this.rowToEntity(row)),
+      total: Number(count),
     };
   }
 
@@ -80,17 +80,17 @@ export default class ExitRepositoryMaria implements IExitRepository {
     const toInsert: Partial<ExitRow> = {
       UserId: data.UserId,
       LocationId: data.LocationId,
-      ExitTime: (Exit as any)._toISO?.(data.ExitTime) ?? null,
+      ExitTime: Exit._toISO(data.ExitTime) ?? null,
       EntryId: data.EntryId,
       Result: data.Result ?? null,
       IrregularBehavior: data.IrregularBehavior ? 1 : 0,
       ReviewedByAdmin: data.ReviewedByAdmin ? 1 : 0,
       IsSynced: data.IsSynced ? 1 : 0,
       DeviceId: data.DeviceId ?? null,
-      IsDeleted: 0
+      IsDeleted: 0,
     };
 
-    const [id] = await knex<ExitRow>(this.table()).insert(toInsert as any);
+    const [id] = await knex<ExitRow>(this.table()).insert(toInsert);
     const created = await this.findById(id);
     if (!created) throw new Error('Failed to fetch created Exit');
     return created;
@@ -104,10 +104,10 @@ export default class ExitRepositoryMaria implements IExitRepository {
       ...(patch.IsSynced !== undefined && { IsSynced: patch.IsSynced ? 1 : 0 }),
       ...(patch.DeviceId !== undefined && { DeviceId: patch.DeviceId ?? null }),
       ...(patch.IsDeleted !== undefined && { IsDeleted: patch.IsDeleted ? 1 : 0 }),
-      UpdatedAt: knex.fn.now() as unknown as string
+      UpdatedAt: knex.fn.now() as unknown as string,
     };
 
-    await knex<ExitRow>(this.table()).where({ Id: id }).update(updateData as any);
+    await knex<ExitRow>(this.table()).where({ Id: id }).update(updateData);
     const updated = await this.findById(id);
     if (!updated) throw new Error('Exit not found after update');
     return updated;

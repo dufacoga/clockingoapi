@@ -34,7 +34,7 @@ export default class RoleRepositoryMaria implements IRoleRepository {
   }
 
   async create(role: Role): Promise<Role> {
-    const [id] = await knex<RoleRow>(this.table()).insert({ Name: role.Name } as any);
+    const [id] = await knex<RoleRow>(this.table()).insert({ Name: role.Name });
     const created = await this.findById(id);
     if (!created) throw new Error('Failed to fetch created Role');
     return created;
@@ -53,7 +53,7 @@ export default class RoleRepositoryMaria implements IRoleRepository {
       .offset((page - 1) * pageSize);
 
     return {
-      items: rows.map(r => this.rowToEntity(r)),
+      items: rows.map((row) => this.rowToEntity(row)),
       total: Number(count),
     };
   }
