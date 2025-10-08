@@ -1,44 +1,125 @@
-services:
-  db:
-    image: mariadb:11
-    container_name: clockingo-db
-    env_file:
-      - ../.env.docker
-    ports:
-      - "3306:3306"
-    volumes:
-      - db_data:/var/lib/mysql
-      - ../scripts/migrations/00-create-dbs.sql:/docker-entrypoint-initdb.d/00-create-dbs.sql:ro
-      - ../scripts/migrations/11-schema-dev.sql:/docker-entrypoint-initdb.d/11-schema-dev.sql:ro
-      - ../scripts/seeds/12-seed-dev.sql:/docker-entrypoint-initdb.d/12-seed-dev.sql:ro
-      - ../scripts/migrations/21-schema-test.sql:/docker-entrypoint-initdb.d/21-schema-test.sql:ro
-      - ../scripts/seeds/22-seed-test.sql:/docker-entrypoint-initdb.d/22-seed-test.sql:ro
-    healthcheck:
-      test: ["CMD-SHELL", "mariadb-admin ping -h 127.0.0.1 --protocol=TCP -uroot -p\"${MARIADB_ROOT_PASSWORD:-root}\" >/dev/null 2>&1 || exit 1"]
-      interval: 5s
-      timeout: 3s
-      retries: 20
-      start_period: 30s
+version: '3.8'
+name: clockingoapi
 
-  api:
+services:
+  mariadb-dev:
+    image: mariadb:11
+    container_name: clockingo-mariadb-dev
+    env_file:
+      - ../.env.dev
+    environment:
+      DB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      DB_NAME: ${DB_NAME}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - mariadb_dev_data:/var/lib/mysql
+      - ../scripts/migrations/00-create-dbs.sql:/docker-entrypoint-initdb.d/00-create-dbs.sql:ro
+      - ../scripts/seeds/dev/11-schema-dev.sql:/docker-entrypoint-initdb.d/11-schema-dev.sql:ro
+      - ../scripts/seeds/dev/12-seed-dev.sql:/docker-entrypoint-initdb.d/12-seed-dev.sql:ro
+    ports:
+      - "3307:3306"
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-p${DB_PASSWORD}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+    networks: [devnet]
+
+  api-dev:
     build:
       context: ..
       dockerfile: server/Dockerfile
-      target: prod
-    container_name: clockingo-api
-    env_file:
-      - ../.env.docker
-    ports:
-      - "3000:3000"
+    container_name: clockingo-api-dev
+    restart: unless-stopped
     depends_on:
-      db:
+      mariadb-dev:
         condition: service_healthy
+    env_file:
+      - ../.env.dev
+    environment:
+      NODE_ENV: development
+      DB_HOST: mariadb-dev
+      DB_PORT: "3306"
+    ports:
+      - "3001:3000"
     healthcheck:
       test: ["CMD-SHELL", "wget --header='x-api-key: ${API_KEY}' -qO- http://localhost:3000/health | grep -q '\"ok\":true'"]
       interval: 10s
       timeout: 5s
       retries: 10
       start_period: 20s
+    networks: [devnet]
+
+  mariadb-test:
+    image: mariadb:11
+    container_name: clockingo-mariadb-test
+    env_file:
+      - ../.env.test
+    environment:
+      DB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      DB_NAME: ${DB_NAME}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - mariadb_dev_data:/var/lib/mysql
+      - ../scripts/migrations/00-create-dbs.sql:/docker-entrypoint-initdb.d/00-create-dbs.sql:ro
+      - ../scripts/seeds/test/21-schema-dev.sql:/docker-entrypoint-initdb.d/21-schema-dev.sql:ro
+      - ../scripts/seeds/test/22-seed-dev.sql:/docker-entrypoint-initdb.d/22-seed-dev.sql:ro
+    ports:
+      - "3308:3306"
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-p${DB_PASSWORD}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+    networks: [testnet]
+
+  api-test:
+    build:
+      context: ..
+      dockerfile: server/Dockerfile
+    container_name: clockingo-api-test
+    depends_on:
+      mariadb-test:
+        condition: service_healthy
+    env_file:
+      - ../.env.test
+    environment:
+      NODE_ENV: test
+      DB_HOST: mariadb-test
+      DB_PORT: "3306"
+    command: ["sh", "-lc", "npm ci && npm run build && npm run test"]
+    networks: [testnet]
+
+  api-prod:
+    build:
+      context: ..
+      dockerfile: server/Dockerfile
+    container_name: clockingo-api-prod
+    restart: unless-stopped
+    env_file:
+      - ../.env
+    environment:
+      NODE_ENV: production
+    ports:
+      - "3000:3000"
+    command: ["sh", "-lc", "npm ci && npm run start"]
+    healthcheck:
+      test: ["CMD-SHELL", "wget --header='x-api-key: ${API_KEY}' -qO- http://localhost:3000/health | grep -q '\"ok\":true'"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+    networks: [prodnet]
 
 volumes:
-  db_data:
+  mariadb_dev_data:
+  mariadb_test_data:
+
+networks:
+  devnet:
+  testnet:
+  prodnet:

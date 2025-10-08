@@ -1,9 +1,11 @@
 import { defineConfig } from 'vitest/config';
+import tsconfigPaths from 'vite-tsconfig-paths';
 
 export default defineConfig({
     test: {
-    environment: 'node',
-    setupFiles: ['tests/setup/env.ts'],
-    hookTimeout: 30_000,
+        globals: true,
+        environment: 'node',
+        setupFiles: ['./tests/setup/env.ts'],
     },
+    plugins: [tsconfigPaths()],
 });
