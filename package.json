@@ -9,7 +9,7 @@
     "test": "vitest run --runInBand",
     "prebuild": "npm run lint && npm run typecheck",
     "build": "tsc -p tsconfig.json",
-    "start": "npm run build && node dist/index.js",
+    "start": "node dist/index.js",
     "typecheck": "tsc --noEmit",
     "lint": "eslint \"src/**/*.{ts,tsx}\""
   },

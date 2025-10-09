@@ -74,7 +74,7 @@ app.use(healthRoutes());
 
 app.use(errorHandler);
 
-const PORT = Number(process.env.PORT ?? 3000);
+const PORT = Number(process.env.PORT);
 app.listen(PORT, () => console.log(`REST running on :${PORT}`));
 
 export default app;

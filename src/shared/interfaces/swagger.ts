@@ -2,7 +2,7 @@ import swaggerJSDoc, { Options } from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
 import type { SwaggerUiOptions } from 'swagger-ui-express';
 
-const SERVER_URL = process.env.API_BASE_URL ?? 'http://localhost:3000';
+const SERVER_URL = process.env.API_BASE_URL;
 
 const options: Options = {
   definition: {
@@ -16,14 +16,13 @@ const options: Options = {
     },
     servers: [
       { url: SERVER_URL, description: 'Default Server' },
-      { url: 'http://localhost:3000', description: 'Local Dev' },
     ],
     tags: [
       { name: 'Users', description: 'Módulo Users' },
       { name: 'Locations', description: 'Módulo Locations' },
       { name: 'Entries', description: 'Módulo Entries' },
       { name: 'Exits', description: 'Módulo Exits' },
-      { name: 'Roles', description: 'Módulo Roles' } // ← NUEVO
+      { name: 'Roles', description: 'Módulo Roles' } 
     ],
     components: {
       securitySchemes: {
