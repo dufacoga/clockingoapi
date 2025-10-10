@@ -5,6 +5,6 @@ export interface ILocationRepository {
   findByCode(code: string): Promise<Location | null>;
   create(location: Location): Promise<Location>;
   update(id: number, patch: Partial<Location>): Promise<Location>;
-  softDelete(id: number): Promise<void>;
+  softDelete(id: number): Promise<boolean>;
   listPage(params: { page?: number; pageSize?: number }): Promise<{ items: Location[]; total: number }>;
 }

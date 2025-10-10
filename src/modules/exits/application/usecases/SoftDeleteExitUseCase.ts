@@ -19,10 +19,7 @@ export default class SoftDeleteExitUseCase {
     if (!exitEntity) throw this.err('EXIT_NOT_FOUND', 404);
     if (exitEntity.IsDeleted) throw this.err('EXIT_ALREADY_DELETED', 409);
 
-    try {
-      await exitRepo.update(id, { IsDeleted: true });
-    } catch {
-      throw this.err('EXIT_DELETE_FAILED', 500);
-    }
+    const ok = await exitRepo.softDelete(id);
+    if (!ok) throw this.err('USER_NOT_FOUND', 404);
   }
 }

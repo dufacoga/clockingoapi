@@ -94,9 +94,10 @@ export default class UserRepositoryMaria implements IUserRepository {
     return updated;
   }
 
-  async softDelete(id: number): Promise<void> {
-    await knex<UserRow>(this.table())
+  async softDelete(id: number): Promise<boolean> {
+    const affected = await knex<UserRow>(this.table())
       .where({ Id: id, IsDeleted: 0 })
       .update({ IsDeleted: 1 });
+    return affected > 0;
   }
 }

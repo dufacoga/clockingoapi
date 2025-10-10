@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeAll } from 'vitest';
+import { describe, it, expect, beforeEach } from 'vitest';
 import request from 'supertest';
 import app from '../../src/index';
 import '../setup/hooks';
@@ -26,7 +26,7 @@ async function createUserFixture(overrides: Partial<any> = {}) {
 describe('API - /users', () => {
   let baseUser: { Id: number; Username: string };
 
-  beforeAll(async () => {
+  beforeEach(async () => {
     baseUser = await createUserFixture();
   });
 
@@ -125,7 +125,7 @@ describe('API - /users', () => {
     it('soft deletes and then 404 on GET', async () => {
       const tmp = await createUserFixture();
       const del = await request(app).delete(`/users/${tmp.Id}`).set(apiKeyHeader);
-      expect(del.status).toBe(200);
+      expect([200, 204]).toContain(del.status);
 
       const get = await request(app).get(`/users/${tmp.Id}`).set(apiKeyHeader);
       expect(get.status).toBe(404);

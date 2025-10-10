@@ -94,9 +94,10 @@ export default class LocationRepositoryMaria implements ILocationRepository {
     return updated;
   }
 
-  async softDelete(id: number): Promise<void> {
-    await knex<LocationRow>(this.table())
+  async softDelete(id: number): Promise<boolean> {
+    const affected = await knex<LocationRow>(this.table())
       .where({ Id: id, IsDeleted: 0 })
       .update({ IsDeleted: 1 });
+    return affected > 0;
   }
 }

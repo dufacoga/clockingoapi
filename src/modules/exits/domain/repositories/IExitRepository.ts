@@ -5,6 +5,6 @@ export interface IExitRepository {
   findByEntryId(entryId: number): Promise<Exit | null>;
   create(exit: Exit): Promise<Exit>;
   update(id: number, data: Partial<Exit>): Promise<Exit>;
-  softDelete(id: number): Promise<void>;
+  softDelete(id: number): Promise<boolean>;
   listPage(params: { page?: number; pageSize?: number }): Promise<{ items: Exit[]; total: number }>;
 }

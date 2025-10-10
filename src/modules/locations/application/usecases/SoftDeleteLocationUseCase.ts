@@ -16,10 +16,7 @@ export default class SoftDeleteLocationUseCase {
     if (!loc) throw this.err('LOCATION_NOT_FOUND', 404);
     if (loc.IsDeleted) throw this.err('LOCATION_ALREADY_DELETED', 409);
 
-    try {
-      await locationRepo.update(id, { IsDeleted: true });
-    } catch {
-      throw this.err('LOCATION_DELETE_FAILED', 500);
-    }
+    const ok = await locationRepo.softDelete(id);
+    if (!ok) throw this.err('USER_NOT_FOUND', 404);
   }
 }

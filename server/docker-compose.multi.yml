@@ -74,6 +74,7 @@ services:
       - ../.env.test
     volumes:
       - ../tests:/app/tests:ro
+      - ../src:/app/src:ro
       - ../vitest.config.ts:/app/vitest.config.ts:ro
       - ../.env.test:/app/.env.test:ro
     ports:

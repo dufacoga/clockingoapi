@@ -107,9 +107,10 @@ export default class EntryRepositoryMaria implements IEntryRepository {
     return updated;
   }
 
-  async softDelete(id: number): Promise<void> {
-    await knex<EntryRow>(this.table())
+  async softDelete(id: number): Promise<boolean> {
+    const affected = await knex<EntryRow>(this.table())
       .where({ Id: id, IsDeleted: 0 })
       .update({ IsDeleted: 1, UpdatedAt: knex.fn.now() as unknown as string });
+    return affected > 0;
   }
 }

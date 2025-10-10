@@ -5,6 +5,6 @@ export interface IUserRepository {
   findByUsername(username: string): Promise<User | null>;
   create(user: User): Promise<User>;
   update(id: number, data: Partial<User>): Promise<User>;
-  softDelete(id: number): Promise<void>;
+  softDelete(id: number): Promise<boolean>;
   listPage(params: { page?: number; pageSize?: number }): Promise<{ items: User[]; total: number }>;
 }

@@ -17,10 +17,7 @@ export default class SoftDeleteEntryUseCase {
     if (!entry) throw this.buildError('ENTRY_NOT_FOUND', 404);
     if (entry.IsDeleted) throw this.buildError('ENTRY_ALREADY_DELETED', 409);
 
-    try {
-      await entryRepo.update(id, { IsDeleted: true });
-    } catch {
-      throw this.buildError('ENTRY_DELETE_FAILED', 500);
-    }
+    const ok = await entryRepo.softDelete(id);
+    if (!ok) throw this.buildError('USER_NOT_FOUND', 404);
   }
 }
