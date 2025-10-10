@@ -67,14 +67,11 @@ const exitsUC = buildExits({
 
 entriesUC.setExitRepo(exitsUC.exitRepo);
 
-if (process.env.ENDPOINTS_ENABLED === 'true') {
-  app.use('/entries', entriesRoutes(entriesUC));
-  app.use('/exits', exitsRoutes(exitsUC));
-  app.use('/locations', locationsRoutes(locationsUC));
-  app.use('/roles', roleRoutes(rolesUC));
-  app.use('/users', usersRoutes(usersUC));
-}
-
+app.use('/entries', entriesRoutes(entriesUC));
+app.use('/exits', exitsRoutes(exitsUC));
+app.use('/locations', locationsRoutes(locationsUC));
+app.use('/roles', roleRoutes(rolesUC));
+app.use('/users', usersRoutes(usersUC));
 app.use(healthRoutes());
 
 app.use(errorHandler);
