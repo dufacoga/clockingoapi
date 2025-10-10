@@ -72,6 +72,10 @@ services:
         condition: service_healthy
     env_file:
       - ../.env.test
+    volumes:
+      - ../tests:/app/tests:ro
+      - ../vitest.config.ts:/app/vitest.config.ts:ro
+      - ../.env.test:/app/.env.test:ro
     ports:
       - "3002:3000"
     command: ["sh", "-lc", "npm ci && npm run start"]

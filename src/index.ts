@@ -46,7 +46,9 @@ const corsOptions: CorsOptions = {
 app.use(cors(corsOptions));
 app.use(bodyParser.json());
 
-app.use('/swagger', swaggerUi.serve, swaggerUi.setup(specs, uiOptions));
+if (process.env.SWAGGER_ENABLED === 'true') {
+  app.use('/swagger', swaggerUi.serve, swaggerUi.setup(specs, uiOptions));
+}
 
 app.use(apiKeyAuth);
 
@@ -65,11 +67,14 @@ const exitsUC = buildExits({
 
 entriesUC.setExitRepo(exitsUC.exitRepo);
 
-app.use('/entries', entriesRoutes(entriesUC));
-app.use('/exits', exitsRoutes(exitsUC));
-app.use('/locations', locationsRoutes(locationsUC));
-app.use('/roles', roleRoutes(rolesUC));
-app.use('/users', usersRoutes(usersUC));
+if (process.env.ENDPOINTS_ENABLED === 'true') {
+  app.use('/entries', entriesRoutes(entriesUC));
+  app.use('/exits', exitsRoutes(exitsUC));
+  app.use('/locations', locationsRoutes(locationsUC));
+  app.use('/roles', roleRoutes(rolesUC));
+  app.use('/users', usersRoutes(usersUC));
+}
+
 app.use(healthRoutes());
 
 app.use(errorHandler);

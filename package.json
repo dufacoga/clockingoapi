@@ -6,7 +6,7 @@
   "type": "commonjs",
   "scripts": {
     "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
-    "test": "vitest run --runInBand",
+    "test": "vitest run",
     "prebuild": "npm run lint && npm run typecheck",
     "build": "tsc -p tsconfig.json",
     "start": "node dist/index.js",
@@ -42,6 +42,7 @@
     "tsx": "^4.20.6",
     "typescript": "^5.9.2",
     "typescript-eslint": "^8.45.0",
+    "vite-tsconfig-paths": "^5.1.4",
     "vitest": "^3.2.4"
   }
 }
