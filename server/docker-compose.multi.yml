@@ -5,7 +5,7 @@ services:
     env_file:
       - ../.env.dev
     volumes:
-      - mariadb_dev_data:/var/lib/mysql
+      - clockingo_mariadb_dev_data:/var/lib/mysql
       - ../scripts/migrations/00-create-dbs.sql:/docker-entrypoint-initdb.d/00-create-dbs.sql:ro
       - ../scripts/migrations/11-schema-dev.sql:/docker-entrypoint-initdb.d/11-schema-dev.sql:ro
       - ../scripts/seeds/12-seed-dev.sql:/docker-entrypoint-initdb.d/12-seed-dev.sql:ro
@@ -17,12 +17,13 @@ services:
       timeout: 5s
       retries: 10
       start_period: 20s
-    networks: [devnet]
+    networks: [clockingo_devnet]
 
   api-dev:
     build:
       context: ..
       dockerfile: server/Dockerfile
+    image: clockingo/api:dev
     container_name: clockingo-api-dev
     restart: unless-stopped
     depends_on:
@@ -39,7 +40,7 @@ services:
       timeout: 5s
       retries: 10
       start_period: 20s
-    networks: [devnet]
+    networks: [clockingo_devnet]
 
   mariadb-test:
     image: mariadb:11
@@ -47,7 +48,7 @@ services:
     env_file:
       - ../.env.test
     volumes:
-      - mariadb_test_data:/var/lib/mysql
+      - clockingo_mariadb_test_data:/var/lib/mysql
       - ../scripts/migrations/00-create-dbs.sql:/docker-entrypoint-initdb.d/00-create-dbs.sql:ro
       - ../scripts/migrations/21-schema-test.sql:/docker-entrypoint-initdb.d/21-schema-test.sql:ro
       - ../scripts/seeds/22-seed-test.sql:/docker-entrypoint-initdb.d/22-seed-test.sql:ro
@@ -59,12 +60,13 @@ services:
       timeout: 5s
       retries: 10
       start_period: 20s
-    networks: [testnet]
+    networks: [clockingo_testnet]
 
   api-test:
     build:
       context: ..
       dockerfile: server/Dockerfile
+    image: clockingo/api:test
     container_name: clockingo-api-test
     restart: unless-stopped
     depends_on:
@@ -86,7 +88,7 @@ services:
       timeout: 5s
       retries: 10
       start_period: 20s
-    networks: [testnet]
+    networks: [clockingo_testnet]
 
   mariadb-prod:
     image: mariadb:11
@@ -94,7 +96,7 @@ services:
     env_file:
       - ../.env.prod
     volumes:
-      - mariadb_prod_data:/var/lib/mysql
+      - clockingo_mariadb_prod_data:/var/lib/mysql
       - ../scripts/migrations/00-create-dbs.sql:/docker-entrypoint-initdb.d/00-create-dbs.sql:ro
       - ../scripts/migrations/31-schema-prod.sql:/docker-entrypoint-initdb.d/31-schema-prod.sql:ro
       - ../scripts/seeds/32-seed-prod.sql:/docker-entrypoint-initdb.d/32-seed-prod.sql:ro
@@ -106,12 +108,13 @@ services:
       timeout: 5s
       retries: 10
       start_period: 20s
-    networks: [prodnet]
+    networks: [clockingo_prodnet]
 
   api-prod:
     build:
       context: ..
       dockerfile: server/Dockerfile
+    image: clockingo/api:prod
     container_name: clockingo-api-prod
     restart: unless-stopped
     depends_on:
@@ -128,14 +131,14 @@ services:
       timeout: 5s
       retries: 10
       start_period: 20s
-    networks: [prodnet]
+    networks: [clockingo_prodnet]
 
 volumes:
-  mariadb_dev_data:
-  mariadb_test_data:
-  mariadb_prod_data:
+  clockingo_mariadb_dev_data:
+  clockingo_mariadb_test_data:
+  clockingo_mariadb_prod_data:
 
 networks:
-  devnet:
-  testnet:
-  prodnet:
+  clockingo_devnet:
+  clockingo_testnet:
+  clockingo_prodnet:
