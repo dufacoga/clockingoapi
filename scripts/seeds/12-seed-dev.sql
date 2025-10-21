@@ -8,7 +8,7 @@ INSERT INTO clockingo_dev.Roles
 VALUES(2, 'Worker');
 
 INSERT INTO clockingo_dev.Users
-(Id, Name, Phone, Username, AuthToken, RoleId, IsDeleted)
+(Id, Name, Phone, Username, AuthToken, RoleId, IsDeleted, TotpSecret, TwoFactorEnabled)
 VALUES(1, 'Douglas Cortes', '555-3003', 'dcortes', 'auth123dev', 1, 0, 'JBSWY3DPEHPK3PXP', 1);
 INSERT INTO clockingo_dev.Users
 (Id, Name, Phone, Username, AuthToken, RoleId, IsDeleted)
