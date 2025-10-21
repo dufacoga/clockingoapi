@@ -8,6 +8,7 @@ import UpdateUserUseCase from '../../application/usecases/UpdateUserUseCase';
 import ListUsersUseCase from '../../application/usecases/ListUsersUseCase';
 import SoftDeleteUserUseCase from '../../application/usecases/SoftDeleteUserUseCase';
 import VerifyTotpUseCase from '../../application/usecases/VerifyTotpUseCase';
+import UpdateUserTotpUseCase from '../../application/usecases/UpdateUserTotpUseCase';
 
 export default function buildUser() {
   const userRepo = new UserRepositoryMaria();
@@ -19,6 +20,7 @@ export default function buildUser() {
     getUserByUsername: new GetUserByUsernameUseCase({ userRepo }),
     createUser: new CreateUserUseCase({ userRepo, roleRepo }),
     updateUser: new UpdateUserUseCase({ userRepo, roleRepo }),
+    updateUserTotp: new UpdateUserTotpUseCase({ userRepo }),
     softDeleteUser: new SoftDeleteUserUseCase({ userRepo }),
     verifyTotp: new VerifyTotpUseCase({ userRepo }),
     userRepo,

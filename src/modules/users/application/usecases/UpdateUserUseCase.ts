@@ -8,6 +8,9 @@ export type UpdateUserDTO = Partial<{
   Username: string;
   AuthToken: string;
   RoleId: number;
+  TotpSecret: string | null;
+  TwoFactorEnabled: boolean;
+  RecoveryCodes: string | null;
 }>;
 
 export default class UpdateUserUseCase {
@@ -46,6 +49,9 @@ export default class UpdateUserUseCase {
     if (patch.Username !== undefined) cleaned.Username = patch.Username;
     if (patch.AuthToken !== undefined) cleaned.AuthToken = patch.AuthToken;
     if (patch.RoleId !== undefined) cleaned.RoleId = patch.RoleId;
+    if (patch.TotpSecret !== undefined) cleaned.TotpSecret = patch.TotpSecret ?? null;
+    if (patch.TwoFactorEnabled !== undefined) cleaned.TwoFactorEnabled = patch.TwoFactorEnabled;
+    if (patch.RecoveryCodes !== undefined) cleaned.RecoveryCodes = patch.RecoveryCodes ?? null;
 
     if (Object.keys(cleaned).length === 0) return user;
 

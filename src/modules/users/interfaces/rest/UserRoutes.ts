@@ -9,7 +9,14 @@ import {
   paginationQuerySchema,
 } from '../../../../shared/interfaces/rest/schemas/CommonSchemas';
 
-import { createUserSchema, updateUserSchema, UpdateUserDTO, verifyTotpSchema } from './schemas/UserSchema';
+import {
+  createUserSchema,
+  updateUserSchema,
+  UpdateUserDTO,
+  updateUserTotpSchema,
+  UpdateUserTotpDTO,
+  verifyTotpSchema,
+} from './schemas/UserSchema';
 
 import { UserUC } from './UserBuild';
 
@@ -76,6 +83,17 @@ export default function userRoutes(uc: UserUC) {
     asyncHandler(async (_req, res) => {
       const { id, ...patch } = getValidated<{ id: number } & UpdateUserDTO>(res);
       const updated = await uc.updateUser.execute(Number(id), patch);
+      res.json(updated);
+    })
+  );
+
+  r.patch(
+    '/:id/totp',
+    validate(idParamSchema, 'params'),
+    validate(updateUserTotpSchema, 'body'),
+    asyncHandler(async (_req, res) => {
+      const { id, ...patch } = getValidated<{ id: number } & UpdateUserTotpDTO>(res);
+      const updated = await uc.updateUserTotp.execute(Number(id), patch);
       res.json(updated);
     })
   );

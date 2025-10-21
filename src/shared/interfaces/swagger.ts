@@ -53,6 +53,28 @@ const options: Options = {
             },
           },
         },
+        UpdateUserTotp: {
+          required: true,
+          content: {
+            'application/json': {
+              schema: { type: 'object' },
+              example: {
+                TotpSecret: 'JBSWY3DPEHPK3PXP',
+                TwoFactorEnabled: true,
+                RecoveryCodes: 'code1,code2',
+              },
+            },
+          },
+        },
+        VerifyUserTotp: {
+          required: true,
+          content: {
+            'application/json': {
+              schema: { type: 'object' },
+              example: { code: '123456' },
+            },
+          },
+        },
         CreateLocation: {
           required: true,
           content: {
@@ -170,6 +192,26 @@ const options: Options = {
           description: 'Marca `IsDeleted=1` (no elimina físicamente).',
           parameters: [{ in: 'path', name: 'id', required: true, schema: { type: 'integer', example: 1 } }],
           responses: { '204': { description: 'Sin contenido (soft-deleted)' }, '404': { description: 'No encontrado' } },
+        },
+      },
+      '/users/{id}/totp': {
+        patch: {
+          tags: ['Users'],
+          summary: 'Actualizar configuración TOTP',
+          description: 'Permite guardar secretos, códigos de recuperación y habilitar/deshabilitar el 2FA.',
+          parameters: [{ in: 'path', name: 'id', required: true, schema: { type: 'integer', example: 1 } }],
+          requestBody: { $ref: '#/components/requestBodies/UpdateUserTotp' },
+          responses: { '200': { description: 'OK' }, '404': { description: 'No encontrado' } },
+        },
+      },
+      '/users/{id}/totp/verify': {
+        post: {
+          tags: ['Users'],
+          summary: 'Verificar código TOTP',
+          description: 'Valida un código TOTP contra el secreto almacenado para el usuario.',
+          parameters: [{ in: 'path', name: 'id', required: true, schema: { type: 'integer', example: 1 } }],
+          requestBody: { $ref: '#/components/requestBodies/VerifyUserTotp' },
+          responses: { '200': { description: 'Devuelve `{ valid: boolean }`' }, '404': { description: 'No encontrado' } },
         },
       },
       '/users/username/{username}': {

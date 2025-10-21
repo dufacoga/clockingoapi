@@ -1,4 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest';
+import { authenticator } from 'otplib';
 import request from 'supertest';
 import app from '../../src/index';
 import '../setup/hooks';
@@ -21,6 +22,15 @@ async function createUserFixture(overrides: Partial<any> = {}) {
   const res = await request(app).post('/users').set(apiKeyHeader).send(payload);
   expect(res.status).toBe(201);
   return res.body as { Id: number; Username: string };
+}
+
+async function updateTotp(userId: number, patch: Record<string, unknown>) {
+  const res = await request(app)
+    .patch(`/users/${userId}/totp`)
+    .set(apiKeyHeader)
+    .send(patch);
+  expect(res.status).toBe(200);
+  return res.body as Record<string, unknown>;
 }
 
 describe('API - /users', () => {
@@ -118,6 +128,69 @@ describe('API - /users', () => {
         .send({ Username: 'any' });
       expect(res.status).toBe(404);
       expect(res.body.error).toBe('USER_NOT_FOUND');
+    });
+  });
+
+  describe('PATCH /users/:id/totp', () => {
+    it('updates totp fields for a user', async () => {
+      const secret = 'JBSWY3DPEHPK3PXP';
+      const response = await request(app)
+        .patch(`/users/${baseUser.Id}/totp`)
+        .set(apiKeyHeader)
+        .send({
+          TotpSecret: secret,
+          TwoFactorEnabled: true,
+          RecoveryCodes: 'code1,code2',
+        });
+
+      expect(response.status).toBe(200);
+      expect(response.body.TotpSecret).toBe(secret);
+      expect(response.body.TwoFactorEnabled).toBe(true);
+      expect(response.body.RecoveryCodes).toBe('code1,code2');
+    });
+
+    it('returns 400 when body is empty', async () => {
+      const res = await request(app)
+        .patch(`/users/${baseUser.Id}/totp`)
+        .set(apiKeyHeader)
+        .send({});
+      expect(res.status).toBe(400);
+      expect(res.body.error).toBe('VALIDATION_ERROR');
+    });
+  });
+
+  describe('POST /users/:id/totp/verify', () => {
+    it('returns valid when the token matches the stored secret', async () => {
+      const secret = 'JBSWY3DPEHPK3PXP';
+      await updateTotp(baseUser.Id, {
+        TotpSecret: secret,
+        TwoFactorEnabled: true,
+      });
+
+      const token = authenticator.generate(secret);
+
+      const res = await request(app)
+        .post(`/users/${baseUser.Id}/totp/verify`)
+        .set(apiKeyHeader)
+        .send({ code: token });
+
+      expect(res.status).toBe(200);
+      expect(res.body.valid).toBe(true);
+    });
+
+    it('returns invalid for wrong codes', async () => {
+      await updateTotp(baseUser.Id, {
+        TotpSecret: 'JBSWY3DPEHPK3PXP',
+        TwoFactorEnabled: true,
+      });
+
+      const res = await request(app)
+        .post(`/users/${baseUser.Id}/totp/verify`)
+        .set(apiKeyHeader)
+        .send({ code: '000000' });
+
+      expect(res.status).toBe(200);
+      expect(res.body.valid).toBe(false);
     });
   });
 
