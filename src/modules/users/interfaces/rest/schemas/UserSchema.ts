@@ -11,6 +11,17 @@ export const createUserSchema = z.object({
 
 export type CreateUserDTO = z.infer<typeof createUserSchema>;
 
+const totpFieldsSchema = z.object({
+  TotpSecret: z
+    .string()
+    .min(16)
+    .max(255)
+    .optional()
+    .nullable(),
+  TwoFactorEnabled: z.boolean().optional(),
+  RecoveryCodes: z.string().min(1).max(4096).optional().nullable(),
+});
+
 export const updateUserSchema = z
   .object({
     Name: z.string().min(1).max(100).optional(),
@@ -20,6 +31,7 @@ export const updateUserSchema = z
     RoleId: z.number().int().optional(),
     IsDeleted: z.boolean().optional(),
   })
+  .merge(totpFieldsSchema)
   .refine((data) => Object.keys(data).length > 0, {
     message: 'Empty patch',
   });
@@ -31,3 +43,12 @@ export const verifyTotpSchema = z.object({
 });
 
 export type VerifyTotpDTO = z.infer<typeof verifyTotpSchema>;
+
+export const updateUserTotpSchema = totpFieldsSchema.refine(
+  (data) => Object.keys(data).length > 0,
+  {
+    message: 'Empty patch',
+  }
+);
+
+export type UpdateUserTotpDTO = z.infer<typeof updateUserTotpSchema>;
