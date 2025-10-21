@@ -8,8 +8,9 @@ INSERT INTO clockingo_prod.Roles
 VALUES(2, 'Worker');
 
 INSERT INTO clockingo_prod.Users
-(Id, Name, Phone, Username, AuthToken, RoleId, IsDeleted)
-VALUES(1, 'Administrator', '000-0000', 'administrator', 'auth123adminprod', 1, 0);
+(Id, Name, Phone, Username, AuthToken, RoleId, IsDeleted, TotpSecret, TwoFactorEnabled)
+VALUES(1, 'Administrator', '000-0000', 'administrator', 'auth123adminprod', 1, 0, 'JBSWY3DPEHPK3PXP', 1);
+
 
 INSERT INTO clockingo_prod.Locations
 (Id, Code, Address, City, CreatedBy, IsCompanyOffice, IsDeleted)

@@ -8,6 +8,9 @@ export interface UserProps {
   AuthToken: string;
   RoleId: number;
   IsDeleted?: boolean | number;
+  TotpSecret?: string | null;
+  TwoFactorEnabled?: boolean | number;
+  RecoveryCodes?: string | null;
 }
 
 export class User extends BaseEntity {
@@ -18,8 +21,22 @@ export class User extends BaseEntity {
   AuthToken: string;
   RoleId: number;
   IsDeleted: boolean;
+  TotpSecret: string | null;
+  TwoFactorEnabled: boolean;
+  RecoveryCodes: string | null;
 
-  constructor({ Id = null, Name, Phone = null, Username, AuthToken, RoleId, IsDeleted = false }: UserProps) {
+  constructor({
+    Id = null,
+    Name,
+    Phone = null,
+    Username,
+    AuthToken,
+    RoleId,
+    IsDeleted = false,
+    TotpSecret = null,
+    TwoFactorEnabled = false,
+    RecoveryCodes = null,
+  }: UserProps) {
     super();
     this.Id = Id;
     this.Name = Name;
@@ -28,6 +45,9 @@ export class User extends BaseEntity {
     this.AuthToken = AuthToken;
     this.RoleId = RoleId;
     this.IsDeleted = !!IsDeleted;
+    this.TotpSecret = TotpSecret;
+    this.TwoFactorEnabled = !!TwoFactorEnabled;
+    this.RecoveryCodes = RecoveryCodes;
   }
 
   static override get tableName(): string {
@@ -43,6 +63,9 @@ export class User extends BaseEntity {
       'AuthToken',
       'RoleId',
       'IsDeleted',
+      'TwoFactorEnabled',
+      'TotpSecret',
+      'RecoveryCodes',
     ];
   }
 
@@ -55,6 +78,9 @@ export class User extends BaseEntity {
       AuthToken: row.AuthToken ?? '',
       RoleId: row.RoleId ?? 0,
       IsDeleted: row.IsDeleted ?? false,
+      TotpSecret: row.TotpSecret ?? null,
+      TwoFactorEnabled: row.TwoFactorEnabled ?? false,
+      RecoveryCodes: row.RecoveryCodes ?? null,
     });
   }
 
@@ -67,6 +93,9 @@ export class User extends BaseEntity {
       AuthToken: this.AuthToken,
       RoleId: this.RoleId,
       IsDeleted: this.IsDeleted ? 1 : 0,
+      TwoFactorEnabled: this.TwoFactorEnabled ? 1 : 0,
+      TotpSecret: this.TotpSecret,
+      RecoveryCodes: this.RecoveryCodes,
     };
   }
 }

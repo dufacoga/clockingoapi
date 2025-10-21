@@ -12,6 +12,9 @@ interface UserRow {
   AuthToken: string;
   RoleId: number;
   IsDeleted: TinyInt;
+  TwoFactorEnabled?: TinyInt;
+  TotpSecret?: string | null;
+  RecoveryCodes?: string | null;
 }
 
 export default class UserRepositoryMaria implements IUserRepository {
@@ -27,7 +30,10 @@ export default class UserRepositoryMaria implements IUserRepository {
       Username: row.Username,
       AuthToken: row.AuthToken,
       RoleId: row.RoleId,
-      IsDeleted: row.IsDeleted
+      IsDeleted: row.IsDeleted,
+      TwoFactorEnabled: (row.TwoFactorEnabled ?? 0) === 1,
+      TotpSecret: row.TotpSecret ?? null,
+      RecoveryCodes: row.RecoveryCodes ?? null,
     });
   }
 
@@ -69,7 +75,10 @@ export default class UserRepositoryMaria implements IUserRepository {
       Username: data.Username,
       AuthToken: data.AuthToken,
       RoleId: data.RoleId,
-      IsDeleted: 0
+      IsDeleted: 0,
+      TwoFactorEnabled: data.TwoFactorEnabled ? 1 : 0,
+      TotpSecret: data.TotpSecret ?? null,
+      RecoveryCodes: data.RecoveryCodes ?? null,
     };
 
     const [id] = await knex<UserRow>(this.table()).insert(toInsert);
@@ -85,7 +94,10 @@ export default class UserRepositoryMaria implements IUserRepository {
       ...(patch.Username !== undefined && { Username: patch.Username }),
       ...(patch.AuthToken !== undefined && { AuthToken: patch.AuthToken }),
       ...(patch.RoleId !== undefined && { RoleId: patch.RoleId }),
-      ...(patch.IsDeleted !== undefined && { IsDeleted: patch.IsDeleted ? 1 : 0 })
+      ...(patch.IsDeleted !== undefined && { IsDeleted: patch.IsDeleted ? 1 : 0 }),
+      ...(patch.TwoFactorEnabled !== undefined && { TwoFactorEnabled: patch.TwoFactorEnabled ? 1 : 0 }),
+      ...(patch.TotpSecret !== undefined && { TotpSecret: patch.TotpSecret }),
+      ...(patch.RecoveryCodes !== undefined && { RecoveryCodes: patch.RecoveryCodes }),
     };
 
     await knex<UserRow>(this.table()).where({ Id: id }).update(updateData);

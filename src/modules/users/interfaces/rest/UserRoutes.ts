@@ -9,7 +9,7 @@ import {
   paginationQuerySchema,
 } from '../../../../shared/interfaces/rest/schemas/CommonSchemas';
 
-import { createUserSchema, updateUserSchema, UpdateUserDTO } from './schemas/UserSchema';
+import { createUserSchema, updateUserSchema, UpdateUserDTO, verifyTotpSchema } from './schemas/UserSchema';
 
 import { UserUC } from './UserBuild';
 
@@ -87,6 +87,17 @@ export default function userRoutes(uc: UserUC) {
       const { id } = getValidated<{ id: number }>(res);
       await uc.softDeleteUser.execute(Number(id));
       res.status(204).send();
+    })
+  );
+
+  r.post(
+    '/:id/totp/verify',
+    validate(idParamSchema, 'params'),
+    validate(verifyTotpSchema, 'body'),
+    asyncHandler(async (_req, res) => {
+      const { id, code } = getValidated<{ id: number } & { code: string }>(res);
+      const ok = await uc.verifyTotp.execute({ userId: Number(id), code });
+      res.json({ valid: ok });
     })
   );
 

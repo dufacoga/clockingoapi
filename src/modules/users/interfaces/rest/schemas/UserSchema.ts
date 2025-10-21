@@ -25,3 +25,9 @@ export const updateUserSchema = z
   });
 
 export type UpdateUserDTO = z.infer<typeof updateUserSchema>;
+
+export const verifyTotpSchema = z.object({
+  code: z.string().min(6).max(8),
+});
+
+export type VerifyTotpDTO = z.infer<typeof verifyTotpSchema>;
