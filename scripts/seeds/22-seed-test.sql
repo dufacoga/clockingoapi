@@ -9,7 +9,7 @@ VALUES(2, 'Worker');
 
 INSERT INTO clockingo_test.Users
 (Id, Name, Phone, Username, AuthToken, RoleId, IsDeleted)
-VALUES(1, 'Douglas Cortes', '555-3003', 'dcortes', 'auth123test', 1, 0);
+VALUES(1, 'Douglas Cortes', '555-3003', 'dcortes', 'auth123test', 1, 0, 'JBSWY3DPEHPK3PXP', 1);
 INSERT INTO clockingo_test.Users
 (Id, Name, Phone, Username, AuthToken, RoleId, IsDeleted)
 VALUES(2, 'Bob Johnson', '555-1002', 'bjohnson', 'auth456admin', 1, 0);
