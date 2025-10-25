@@ -1,6 +1,6 @@
 import knex from '../../src/shared/infrastructure/db/knex';
 
-const TABLES = ['Exits', 'Entries', 'Locations', 'Users', 'Roles'];
+const TABLES = ['MenuRoles', 'Menus', 'Exits', 'Entries', 'Locations', 'Users', 'Roles'];
 
 const rolesSeed = [
     { Id: 1, Name: 'Admin' },
