@@ -77,3 +77,25 @@ CREATE TABLE `Exits` (
   CONSTRAINT `Exits_ibfk_2` FOREIGN KEY (`LocationId`) REFERENCES `Locations` (`Id`),
   CONSTRAINT `Exits_ibfk_3` FOREIGN KEY (`EntryId`) REFERENCES `Entries` (`Id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+
+CREATE TABLE `Menus` (
+  `Id` int(11) NOT NULL AUTO_INCREMENT,
+  `NameEs` varchar(100) NOT NULL,
+  `NameEn` varchar(100) NOT NULL,
+  `ParentId` int(11) DEFAULT NULL,
+  `Level` int(11) NOT NULL DEFAULT 1,
+  `DisplayOrder` int(11) NOT NULL DEFAULT 0,
+  `IsDeleted` tinyint(1) DEFAULT 0,
+  PRIMARY KEY (`Id`),
+  KEY `ParentId` (`ParentId`),
+  CONSTRAINT `Menus_ibfk_1` FOREIGN KEY (`ParentId`) REFERENCES `Menus` (`Id`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+
+CREATE TABLE `MenuRoles` (
+  `RoleId` int(11) NOT NULL,
+  `MenuId` int(11) NOT NULL,
+  PRIMARY KEY (`RoleId`, `MenuId`),
+  KEY `MenuId` (`MenuId`),
+  CONSTRAINT `MenuRoles_ibfk_1` FOREIGN KEY (`RoleId`) REFERENCES `Roles` (`Id`) ON DELETE CASCADE,
+  CONSTRAINT `MenuRoles_ibfk_2` FOREIGN KEY (`MenuId`) REFERENCES `Menus` (`Id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;

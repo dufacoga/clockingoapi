@@ -22,6 +22,9 @@ import roleRoutes from './modules/users/interfaces/rest/RoleRoutes';
 import buildUsers from './modules/users/interfaces/rest/UserBuild';
 import usersRoutes from './modules/users/interfaces/rest/UserRoutes';
 
+import buildMenus from './modules/menus/interfaces/rest/MenuBuild';
+import menuRoutes from './modules/menus/interfaces/rest/MenuRoutes';
+
 import healthRoutes from './shared/interfaces/rest/healthRoutes';
 
 import { swaggerUi, specs, uiOptions } from './shared/interfaces/swagger';
@@ -55,6 +58,7 @@ app.use(apiKeyAuth);
 const usersUC = buildUsers();
 const locationsUC = buildLocations({ userRepo: usersUC.userRepo });
 const rolesUC = buildRole();
+const menusUC = buildMenus({ roleRepo: rolesUC.roleRepo });
 const entriesUC = buildEntries({
   userRepo: usersUC.userRepo,
   locationRepo: locationsUC.locationRepo,
@@ -70,6 +74,7 @@ entriesUC.setExitRepo(exitsUC.exitRepo);
 app.use('/entries', entriesRoutes(entriesUC));
 app.use('/exits', exitsRoutes(exitsUC));
 app.use('/locations', locationsRoutes(locationsUC));
+app.use('/menus', menuRoutes(menusUC));
 app.use('/roles', roleRoutes(rolesUC));
 app.use('/users', usersRoutes(usersUC));
 app.use(healthRoutes());

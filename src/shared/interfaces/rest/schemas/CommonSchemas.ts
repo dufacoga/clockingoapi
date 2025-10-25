@@ -11,8 +11,16 @@ export const userIdParamSchema = z.object({
   userId: z.preprocess(toInt, z.number().int().positive())
 });
 
+export const roleIdParamSchema = z.object({
+  roleId: z.preprocess(toInt, z.number().int().positive())
+});
+
 export const entryIdParamSchema = z.object({
   entryId: z.preprocess(toInt, z.number().int().positive())
+});
+
+export const parentIdParamSchema = z.object({
+  parentId: z.preprocess(toInt, z.number().int().min(0))
 });
 
 export const codeParamSchema = z.object({
@@ -30,7 +38,9 @@ export const paginationQuerySchema = z.object({
 
 export type IdParam = z.infer<typeof idParamSchema>;
 export type UserIdParam = z.infer<typeof userIdParamSchema>;
+export type RoleIdParam = z.infer<typeof roleIdParamSchema>;
 export type EntryIdParam = z.infer<typeof entryIdParamSchema>;
+export type ParentIdParam = z.infer<typeof parentIdParamSchema>;
 export type CodeParam = z.infer<typeof codeParamSchema>;
 export type UsernameParam = z.infer<typeof usernameParamSchema>;
 export type PaginationQuery = z.infer<typeof paginationQuerySchema>;

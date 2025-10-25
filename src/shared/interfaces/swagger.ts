@@ -22,7 +22,8 @@ const options: Options = {
       { name: 'Locations', description: 'Módulo Locations' },
       { name: 'Entries', description: 'Módulo Entries' },
       { name: 'Exits', description: 'Módulo Exits' },
-      { name: 'Roles', description: 'Módulo Roles' } 
+      { name: 'Menus', description: 'Módulo Menus' },
+      { name: 'Roles', description: 'Módulo Roles' }
     ],
     components: {
       securitySchemes: {
@@ -144,6 +145,44 @@ const options: Options = {
             'application/json': {
               schema: { type: 'object' },
               example: { ReviewedByAdmin: true, Result: 'OK' },
+            },
+          },
+        },
+        CreateMenu: {
+          required: true,
+          content: {
+            'application/json': {
+              schema: { type: 'object' },
+              example: {
+                NameEs: 'Inicio',
+                NameEn: 'Home',
+                ParentId: null,
+                Level: 1,
+                DisplayOrder: 1,
+              },
+            },
+          },
+        },
+        UpdateMenu: {
+          required: true,
+          content: {
+            'application/json': {
+              schema: { type: 'object' },
+              example: {
+                NameEs: 'Inicio actualizado',
+                NameEn: 'Home updated',
+                Level: 1,
+                DisplayOrder: 2,
+              },
+            },
+          },
+        },
+        AssignMenusToRole: {
+          required: true,
+          content: {
+            'application/json': {
+              schema: { type: 'object' },
+              example: { MenuIds: [1, 2, 3] },
             },
           },
         }
@@ -370,6 +409,81 @@ const options: Options = {
           summary: 'Obtener exit por EntryId',
           parameters: [{ in: 'path', name: 'entryId', required: true, schema: { type: 'integer', example: 39 } }],
           responses: { '200': { description: 'OK' }, '404': { description: 'No encontrado' } },
+        },
+      },
+
+      // ===== MENUS =====
+      '/menus': {
+        get: {
+          tags: ['Menus'],
+          summary: 'Listar menús',
+          description: 'Devuelve `{ items, page, pageSize, total }`. Solo menús con `IsDeleted=0`.',
+          parameters: [
+            { in: 'query', name: 'page', schema: { type: 'integer', example: 1 } },
+            { in: 'query', name: 'pageSize', schema: { type: 'integer', example: 50 } },
+          ],
+          responses: { '200': { description: 'OK' } },
+        },
+        post: {
+          tags: ['Menus'],
+          summary: 'Crear menú',
+          requestBody: { $ref: '#/components/requestBodies/CreateMenu' },
+          responses: { '201': { description: 'Creado' }, '409': { description: 'Nombre duplicado' } },
+        },
+      },
+      '/menus/roles/{roleId}': {
+        get: {
+          tags: ['Menus'],
+          summary: 'Listar menús asignados a un rol',
+          parameters: [
+            { in: 'path', name: 'roleId', required: true, schema: { type: 'integer', example: 1 } },
+          ],
+          responses: { '200': { description: 'OK' }, '404': { description: 'Rol no encontrado' } },
+        },
+        put: {
+          tags: ['Menus'],
+          summary: 'Asignar menús a un rol',
+          parameters: [
+            { in: 'path', name: 'roleId', required: true, schema: { type: 'integer', example: 1 } },
+          ],
+          requestBody: { $ref: '#/components/requestBodies/AssignMenusToRole' },
+          responses: {
+            '204': { description: 'Sin contenido (asignado)' },
+            '404': { description: 'Rol o menú no encontrado' },
+          },
+        },
+      },
+      '/menus/parents/{parentId}': {
+        get: {
+          tags: ['Menus'],
+          summary: 'Listar menús por ParentId',
+          description: 'Usa `0` para obtener los menús raíz (ParentId NULL).',
+          parameters: [
+            { in: 'path', name: 'parentId', required: true, schema: { type: 'integer', minimum: 0, example: 18 } },
+          ],
+          responses: { '200': { description: 'OK' } },
+        },
+      },
+      '/menus/{id}': {
+        get: {
+          tags: ['Menus'],
+          summary: 'Obtener menú por ID',
+          parameters: [{ in: 'path', name: 'id', required: true, schema: { type: 'integer', example: 5 } }],
+          responses: { '200': { description: 'OK' }, '404': { description: 'No encontrado' } },
+        },
+        patch: {
+          tags: ['Menus'],
+          summary: 'Actualizar menú (parcial)',
+          parameters: [{ in: 'path', name: 'id', required: true, schema: { type: 'integer', example: 5 } }],
+          requestBody: { $ref: '#/components/requestBodies/UpdateMenu' },
+          responses: { '200': { description: 'OK' }, '404': { description: 'No encontrado' }, '409': { description: 'Nombre duplicado' } },
+        },
+        delete: {
+          tags: ['Menus'],
+          summary: 'Soft delete menú',
+          description: 'Marca `IsDeleted=1` y elimina asignaciones.',
+          parameters: [{ in: 'path', name: 'id', required: true, schema: { type: 'integer', example: 5 } }],
+          responses: { '204': { description: 'Sin contenido (soft-deleted)' }, '404': { description: 'No encontrado' } },
         },
       },
 
